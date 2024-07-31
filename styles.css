@@ -1,0 +1,114 @@
+/*
+This file is part of Moodle - https://moodle.org/
+
+Moodle is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Moodle is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Moodle. If not, see <https://www.gnu.org/licenses/gpl-3.0>.
+*/
+
+/*
+ * openeducationbadges plugin styles
+ *
+ * @package    local_openeducationbadges
+ * @copyright  2024 esirion
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+/*
+ * Badge list
+ */
+.local-openeducationbadges ul.badgelist {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: 24px;
+}
+.local-openeducationbadges ul.badgelist .openeducation-badge-card {
+	border: 1px solid #d9d9d9;
+	border-radius: 3px;
+	padding: 16px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+.local-openeducationbadges ul.badgelist .openeducation-badge-card-body {
+	display: flex;
+	flex-direction: row;
+	column-gap: 16px;
+}
+.local-openeducationbadges ul.badgelist .openeducation-badge-card-footer {
+	border-top: 1px solid #f2f2f2;
+	padding-top: 16px;
+	margin-top: 16px;
+}
+.local-openeducationbadges ul.badgelist .openeducation-badge-card .badgeimage {
+	width: 80px;
+	height: 80px;
+}
+.local-openeducationbadges ul.badgelist .openeducation-badge-card .badgename {
+	color: #515dc6;
+	font-weight: 700;
+	font-size: 16px;
+	line-height: 24px;
+	hyphens: auto;
+	word-wrap: break-word;
+	margin: 0;
+}
+.local-openeducationbadges ul.badgelist .openeducation-badge-card .badgeissuer {
+	color: #191919;
+	font-weight: 700;
+	font-size: 12px;
+	line-height: 16px;
+	hyphens: auto;
+	word-wrap: break-word;
+	margin: 4px 0 0;
+}
+.local-openeducationbadges ul.badgelist .openeducation-badge-card .badgedesc {
+	color: #666;
+	font-size: 12px;
+	line-height: 16px;
+	margin: 8px 0 0;
+}
+@media (min-width: 768px) {
+	.local-openeducationbadges ul.badgelist {
+		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+	}
+}
+
+/* Settings Clients-Table */
+.oeb-clients-table {
+	width: 100%;
+	margin-bottom: 12px;
+}
+.oeb-clients-table tr {
+	border-top: 1px solid #dee2e6;
+}
+.oeb-clients-table th,
+.oeb-clients-table td {
+	padding: 12px;
+	vertical-align: top;
+}
+
+.oeb-actions {
+	text-align: right;
+}
+
+/* Course Badge Awarding */
+.local-openeducationbadges ul.badgelist .openeducation-badge-card-footer form .form-group {
+	flex-flow: row-reverse;
+}
+
+/* Profile */
+.userprofile .profile_tree .local-openeducationbadges ul.badgelist {
+	gap: 8px;
+}
