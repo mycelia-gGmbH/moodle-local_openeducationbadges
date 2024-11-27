@@ -31,7 +31,18 @@
 function xmldb_local_openeducationbadges_upgrade($oldversion) {
 	global $DB;
 
-	// $dbman = $DB->get_manager(); // Loads ddl manager and xmldb classes.
+	$dbman = $DB->get_manager(); // Loads ddl manager and xmldb classes.
+
+	if ($oldversion < 2024112700) {
+		$oauthtable = new xmldb_table('local_openeducationbadges_oauth2');
+		$dbman->rename_table($oauthtable, 'local_oeb_oauth2');
+
+		$coursebadgetable = new xmldb_table('local_openeducationbadges_course_badge');
+		$dbman->rename_table($coursebadgetable, 'local_oeb_course_badge');
+
+		$configissuerstable = new xmldb_table('local_openeducationbadges_config_issuers');
+		$dbman->rename_table($configissuerstable, 'local_oeb_config_issuers');
+	}
 
 	return true;
 }

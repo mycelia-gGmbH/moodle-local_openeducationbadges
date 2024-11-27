@@ -54,7 +54,7 @@ class local_openeducationbadges_observer
 		$user = $DB->get_record('user', array('id' => $eventdata->userid));
 
 		$records = $DB->get_records(
-			'local_openeducationbadges_course_badge',
+			'local_oeb_course_badge',
 			array(
 				'courseid' => $eventdata->course,
 				'completion_method' => openeducation_badge::COMPLETION_TYPE_COURSE

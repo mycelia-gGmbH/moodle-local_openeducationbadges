@@ -133,7 +133,7 @@ switch ($action) {
 		break;
 	case 'delete':
 		if (confirm_sesskey()) {
-			$DB->delete_records('local_openeducationbadges_oauth2', array('id' => $clientid));
+			$DB->delete_records('local_oeb_oauth2', array('id' => $clientid));
 		}
 
 		redirect($clientsurl, get_string('clientdeleted', 'local_openeducationbadges'));

@@ -160,7 +160,7 @@ class local_openeducationbadges_renderer extends plugin_renderer_base {
 			$PAGE->set_url($PAGE->url, $urlparams);
 
 			$completionMethodRecord = $DB->get_record(
-				'local_openeducationbadges_course_badge',
+				'local_oeb_course_badge',
 				array(
 					'courseid' => $course_id,
 					'badgeid' => $badgeid,
@@ -184,17 +184,17 @@ class local_openeducationbadges_renderer extends plugin_renderer_base {
 
 					if ($completionMethodRecord) {
 						if ($completion_method == 0) {
-							$DB->delete_records('local_openeducationbadges_course_badge', array('id' => $completionMethodRecord->id));
+							$DB->delete_records('local_oeb_course_badge', array('id' => $completionMethodRecord->id));
 						} else {
 							$completionMethodRecord->completion_method = $completion_method;
-							$DB->update_record('local_openeducationbadges_course_badge', $completionMethodRecord);
+							$DB->update_record('local_oeb_course_badge', $completionMethodRecord);
 						}
 					} else if (!$completionMethodRecord && $completion_method) {
 						$completionMethodRecord = new stdClass;
 						$completionMethodRecord->courseid = $course_id;
 						$completionMethodRecord->badgeid = $badgeid;
 						$completionMethodRecord->completion_method = $completion_method;
-						$DB->insert_record('local_openeducationbadges_course_badge', $completionMethodRecord);
+						$DB->insert_record('local_oeb_course_badge', $completionMethodRecord);
 					}
 				}
 			}

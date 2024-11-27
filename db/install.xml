@@ -4,7 +4,7 @@
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="local_openeducationbadges_oauth2" COMMENT="Table for OAuth2 API config">
+    <TABLE NAME="local_oeb_oauth2" COMMENT="Table for OAuth2 API config">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="18" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="client_id" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
@@ -17,7 +17,7 @@
         <KEY NAME="uniq_client_id" TYPE="unique" FIELDS="client_id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="local_openeducationbadges_course_badge" COMMENT="Course and badge mapping with completion methods">
+    <TABLE NAME="local_oeb_course_badge" COMMENT="Course and badge mapping with completion methods">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
@@ -29,7 +29,7 @@
         <KEY NAME="fk_course_id" TYPE="foreign" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="local_openeducationbadges_config_issuers" COMMENT="Table for the active issuers respectively per client">
+    <TABLE NAME="local_oeb_config_issuers" COMMENT="Table for the active issuers respectively per client">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="client_id" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
