@@ -47,8 +47,8 @@ function local_openeducationbadges_add_course_admin_container(&$branch) {
 	global $COURSE;
 
 	$node = navigation_node::create(get_string('oeb', 'local_openeducationbadges'), null, navigation_node::TYPE_CONTAINER, null, 'oeb');
-	$backupnode = $branch->find('backup', navigation_node::TYPE_SETTING);
-	return $branch->add_node($node, $backupnode != false ? 'backup' : null);
+	$course_completion_node = $branch->find('coursecompletion', navigation_node::TYPE_SETTING);
+	return $branch->add_node($node, $course_completion_node != false ? 'coursecompletion' : null);
 }
 
 /**
