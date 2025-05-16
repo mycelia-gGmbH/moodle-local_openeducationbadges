@@ -29,4 +29,8 @@ $observers = array(
 		'eventname' => '\core\event\course_completed',
 		'callback' => 'local_openeducationbadges_observer::course_completed',
 	),
+	array(
+		'eventname' => '\core\event\course_module_completion_updated',
+		'callback' => 'local_openeducationbadges_observer::course_module_completed',
+	),
 );

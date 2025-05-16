@@ -39,10 +39,16 @@ class openeducation_badge {
    const COMPLETION_TYPE_COURSE = 1;
 
 	/**
+    * Completion type associated to activities
+    */
+	const COMPLETION_TYPE_ACTIVITY = 2;
+
+	/**
     * @var array $badgecompletiontype Completion type text associating array.
     */
    private static $badgecompletiontype = array(
 		self::COMPLETION_TYPE_COURSE => 'course',
+		self::COMPLETION_TYPE_ACTIVITY => 'activity',
 	);
 
 	/**

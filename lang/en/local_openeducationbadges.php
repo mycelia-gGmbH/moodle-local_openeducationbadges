@@ -26,6 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['active'] = 'active';
 $string['activeissuers'] = 'Active issuers';
+$string['activitycompletion'] = 'at activity completion:';
 $string['addnew'] = 'Add new';
 $string['addnewoauth2'] = 'Add new OAuth2 API connection';
 $string['all'] = 'All';
@@ -42,7 +43,7 @@ $string['clientname'] = 'Client name';
 $string['clients'] = 'Clients';
 $string['clientsaved'] = 'Client saved';
 $string['clientsecret'] = 'Client secret';
-$string['coursecompletion'] = 'course completion';
+$string['coursecompletion'] = 'at course completion';
 $string['deleteclientconfirm'] = 'Are you sure you want to delete this client?';
 $string['editissuers'] = 'Edit issuers';
 $string['infoconnectapi'] = 'Add API authentication method.';

@@ -159,43 +159,67 @@ class local_openeducationbadges_renderer extends plugin_renderer_base {
 			$urlparams =  array('courseid' => $course_id);
 			$PAGE->set_url($PAGE->url, $urlparams);
 
-			$completionMethodRecord = $DB->get_record(
+			$courseCompletionRecord = $DB->get_record(
 				'local_oeb_course_badge',
 				array(
 					'courseid' => $course_id,
 					'badgeid' => $badgeid,
+					'completion_method' => openeducation_badge::COMPLETION_TYPE_COURSE
 				),
 				'*',
 			);
 
-			$mform = new oeb_course_badge_form($PAGE->url, $badgeid);
+			$activityCompletionRecords = $DB->get_records(
+				'local_oeb_course_badge',
+				array(
+					'courseid' => $course_id,
+					'badgeid' => $badgeid,
+					'completion_method' => openeducation_badge::COMPLETION_TYPE_ACTIVITY
+				),
+				'',
+				'activityid,id'
+			);
 
-			if ($completionMethodRecord) {
-				$mform->set_data(['coursecompletion_'.strval($badgeid) => $completionMethodRecord->completion_method]);
-			} else {
-				$mform->set_data(['coursecompletion_'.strval($badgeid) => 0]);
+			$mform = new oeb_course_badge_form($PAGE->url, $badgeid, $course_id);
+
+			if ($courseCompletionRecord) {
+				$mform->set_data(['coursecompletion_'.strval($badgeid) => 1]);
+			}
+
+			foreach ($activityCompletionRecords as $activityid => $object) {
+				$mform->set_data(['activitycompletion_'.strval($badgeid).'_'.strval($activityid) => 1]);
 			}
 
 			if ($data = $mform->get_data()) {
 				$data_arr = json_decode(json_encode($data), true);
 
 				if (array_key_exists('submit_'.strval($badgeid), $data_arr)) {
-					$completion_method = intval($data_arr['coursecompletion_'.strval($badgeid)]);
-
-					if ($completionMethodRecord) {
-						if ($completion_method == 0) {
-							$DB->delete_records('local_oeb_course_badge', array('id' => $completionMethodRecord->id));
-						} else {
-							$completionMethodRecord->completion_method = $completion_method;
-							$DB->update_record('local_oeb_course_badge', $completionMethodRecord);
-						}
-					} else if (!$completionMethodRecord && $completion_method) {
-						$completionMethodRecord = new stdClass;
-						$completionMethodRecord->courseid = $course_id;
-						$completionMethodRecord->badgeid = $badgeid;
-						$completionMethodRecord->completion_method = $completion_method;
-						$DB->insert_record('local_oeb_course_badge', $completionMethodRecord);
+					$course_completion = intval($data_arr['coursecompletion_'.strval($badgeid)]);
+					if ($courseCompletionRecord && !$course_completion) {
+						$DB->delete_records('local_oeb_course_badge', array('id' => $courseCompletionRecord->id));
+					} else if (!$courseCompletionRecord && $course_completion) {
+						$courseCompletionRecord = new stdClass;
+						$courseCompletionRecord->courseid = $course_id;
+						$courseCompletionRecord->badgeid = $badgeid;
+						$courseCompletionRecord->completion_method = openeducation_badge::COMPLETION_TYPE_COURSE;
+						$courseCompletionRecord->activityid = 0;
+						$DB->insert_record('local_oeb_course_badge', $courseCompletionRecord);
 					}
+
+					$activites = array_keys($mform->getActivityOptions());
+					foreach ($activites as $activityid) {
+						$activity_completion = intval($data_arr['activitycompletion_'.strval($badgeid).'_'.strval($activityid)]);
+						if (!$activity_completion && array_key_exists($activityid, $activityCompletionRecords)) {
+							$DB->delete_records('local_oeb_course_badge', array('id' => $activityCompletionRecords[$activityid]->id));
+						} else if ($activity_completion && !array_key_exists($activityid, $activityCompletionRecords)) {
+							$activityCompletionRecord = new stdClass;
+							$activityCompletionRecord->courseid = $course_id;
+							$activityCompletionRecord->badgeid = $badgeid;
+							$activityCompletionRecord->completion_method = openeducation_badge::COMPLETION_TYPE_ACTIVITY;
+							$activityCompletionRecord->activityid = $activityid;
+							$DB->insert_record('local_oeb_course_badge', $activityCompletionRecord);
+						};
+					};
 				}
 			}
 

@@ -26,6 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['active'] = 'aktiv';
 $string['activeissuers'] = 'Aktive Institutionen';
+$string['activitycompletion'] = 'bei Aktivitätsabschluss:';
 $string['addnew'] = 'Neu hinzufügen';
 $string['addnewoauth2'] = 'Füge eine neue OAuth2 API Verbindung hinzu';
 $string['all'] = 'Alle';
@@ -42,7 +43,7 @@ $string['clientname'] = 'Name der Verbindung';
 $string['clients'] = 'Verbindungen';
 $string['clientsaved'] = 'Verbindung gespeichert';
 $string['clientsecret'] = 'Client secret';
-$string['coursecompletion'] = 'Kursabschluss';
+$string['coursecompletion'] = 'bei Kursabschluss';
 $string['deleteclientconfirm'] = 'Sind Sie sicher, dass Sie diese Verbindung entfernen wollen?';
 $string['editissuers'] = 'Institutionen anpassen';
 $string['infoconnectapi'] = 'Füge eine API Authentifizierungsmethode hinzu.';

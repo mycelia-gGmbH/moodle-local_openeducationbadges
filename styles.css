@@ -107,6 +107,9 @@ along with Moodle. If not, see <https://www.gnu.org/licenses/gpl-3.0>.
 .local-openeducationbadges ul.badgelist .openeducation-badge-card-footer form .form-group {
 	flex-flow: row-reverse;
 }
+.local-openeducationbadges ul.badgelist .openeducation-badge-card-footer form .activitylist .fitem:not(:last-child) {
+	margin-bottom: 0 !important;
+}
 
 /* Profile */
 .userprofile .profile_tree .local-openeducationbadges ul.badgelist {

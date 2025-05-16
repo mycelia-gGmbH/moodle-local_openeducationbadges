@@ -37,9 +37,11 @@ require_once($CFG->libdir . '/formslib.php');
 class oeb_course_badge_form extends moodleform {
 
 	private $badgeid = 0;
+	private $courseid = 0;
 
-	public function __construct($actionurl, $badgeid) {
+	public function __construct($actionurl, $badgeid, $courseid) {
 		$this->badgeid = $badgeid;
+		$this->courseid = $courseid;
 		parent::__construct($actionurl);
 	}
 
@@ -48,6 +50,20 @@ class oeb_course_badge_form extends moodleform {
 
 		$mform->addElement('advcheckbox', 'coursecompletion_'.strval($this->badgeid), get_string('coursecompletion', 'local_openeducationbadges'));
 
+		$actvityOptions = $this->getActivityOptions();
+		if (!empty($actvityOptions)) {
+			$mform->addElement('static', 'activities',
+				NULL,
+   			get_string('activitycompletion', 'local_openeducationbadges')
+			);
+
+			$mform->addElement('html', '<div class="activitylist">');
+			foreach ($actvityOptions as $activityid => $activityname) {
+				$mform->addElement('advcheckbox', 'activitycompletion_'.strval($this->badgeid).'_'.strval($activityid), $activityname);
+			}
+			$mform->addElement('html', '</div>');
+		}
+
 		$mform->addElement('submit', 'submit_'.strval($this->badgeid), get_string('saveawarding', 'local_openeducationbadges'));
 	}
 
@@ -55,5 +71,21 @@ class oeb_course_badge_form extends moodleform {
 		$data = parent::get_data();
 
 		return $data;
+	}
+
+	public function getActivityOptions() {
+
+		$activities = [];
+
+		$modinfo = get_fast_modinfo($this->courseid);
+		$cms = $modinfo->get_cms();
+
+		foreach ($cms as $cm) {
+			if ($cm->completion) {
+				$activities[$cm->id] = $cm->get_formatted_name();
+			}
+		}
+
+		return $activities;
 	}
 }

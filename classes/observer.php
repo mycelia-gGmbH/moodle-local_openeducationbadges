@@ -72,4 +72,53 @@ class local_openeducationbadges_observer
 			$client->issue_badges($user, $badge_ids);
 		} catch (Exception $e) {}
 	}
+
+	/**
+	 * Course modules completion observer
+	 *
+	 * @param \core\event\course_module_completion_updated $event
+	 * @return boolean Returns true if everything went ok.
+	 */
+	public static function course_module_completed(\core\event\course_module_completion_updated $event) {
+		$record_snapshot = $event->get_record_snapshot('course_modules_completion', $event->objectid);
+		$context = context_module::instance($record_snapshot->coursemoduleid);
+		if ($context && $context->get_course_context()) {
+			$eventdata = new stdClass();
+			$eventdata->userid = $event->relateduserid;
+			$eventdata->course = $event->courseid;
+			$eventdata->coursemoduleid = $record_snapshot->coursemoduleid;
+			return self::course_module_user_completion_award($eventdata);
+		}
+	}
+
+	/**
+	 * Issues badges when an activity is completed.
+	 *
+	 * @param stdClass $eventdata
+	 */
+	private static function course_module_user_completion_award(stdClass $eventdata) {
+		global $DB;
+
+		$user = $DB->get_record('user', array('id' => $eventdata->userid));
+
+		$records = $DB->get_records(
+			'local_oeb_course_badge',
+			array(
+				'courseid' => $eventdata->course,
+				'activityid' => $eventdata->coursemoduleid,
+				'completion_method' => openeducation_badge::COMPLETION_TYPE_ACTIVITY
+			),
+			'',
+			'badgeid'
+		);
+		$badge_ids = [];
+		foreach ($records as $record) {
+			$badge_ids[] = $record->badgeid;
+		}
+
+		try {
+			$client = openeducation_client::get_instance();
+			$client->issue_badges($user, $badge_ids);
+		} catch (Exception $e) {}
+	}
 }
