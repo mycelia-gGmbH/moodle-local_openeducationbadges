@@ -56,5 +56,15 @@ function xmldb_local_openeducationbadges_upgrade($oldversion) {
 		upgrade_plugin_savepoint(true, 2025042500, 'local', 'openeducationbadges');
 	}
 
+	if ($oldversion < 2025050500) {
+		$oauthtable = new xmldb_table('local_oeb_oauth2');
+		$statusfield = new xmldb_field('status', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '1');
+		if (!$dbman->field_exists($oauthtable, $statusfield)) {
+			$dbman->add_field($oauthtable, $statusfield);
+		}
+
+		upgrade_plugin_savepoint(true, 2025050500, 'local', 'openeducationbadges');
+	}
+
 	return true;
 }

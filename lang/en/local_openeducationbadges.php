@@ -43,6 +43,8 @@ $string['clientname'] = 'Client name';
 $string['clients'] = 'Clients';
 $string['clientsaved'] = 'Client saved';
 $string['clientsecret'] = 'Client secret';
+$string['connectionsevered'] = 'This connection to Open Education Badges was severed. Please verify your plugin credentials, the availability of the OEB Server or the like and save the connection again.';
+$string['connectionproblemgeneral'] = 'There is a problem with your connections to Open Education Badges. Please verify your plugin credentials, the availability of the OEB Server or the like.';
 $string['coursecompletion'] = 'at course completion';
 $string['deleteclientconfirm'] = 'Are you sure you want to delete this client?';
 $string['editissuers'] = 'Edit issuers';
@@ -63,6 +65,10 @@ $string['selectaward'] = 'Select awarding method:';
 $string['selectcompletion'] = 'Select completion method:';
 $string['settings'] = 'Settings';
 $string['settingssaved'] = 'Settings saved';
+$string['status'] = 'Status';
 
 $string['clientid_help'] = 'Client ID of your openbadges.education account.';
 $string['clientsecret_help'] = 'Log in to your openbadges.education account and go to "App Integration". There you can find the client secret.';
+
+$string['connectionproblemsubject'] = 'The connection {$a->name} has a problem.';
+$string['connectionproblembody'] = 'The connection {$a->name} to Open Education Badges has a problem. Please verify your plugin credentials, the availability of the OEB Server or the like and save the connection again.';

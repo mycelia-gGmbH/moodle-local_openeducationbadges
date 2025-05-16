@@ -58,6 +58,9 @@ switch ($action) {
 			try {
 				$client = openeducation_client::get_instance();
 				$clientrecord = $client->get_client_data($clientid);
+				if (!$clientrecord->status) {
+					echo $OUTPUT->notification(get_string('connectionsevered', 'local_openeducationbadges'), 'notifyproblem');
+				}
 			} catch (Exception $e) {}
 
 			$newRecord = false;
@@ -97,6 +100,10 @@ switch ($action) {
 		$issuers = [];
 		try {
 			$client = openeducation_client::get_instance();
+			$clientrecord = $client->get_client_data($clientid);
+			if (!$clientrecord->status) {
+				echo $OUTPUT->notification(get_string('connectionsevered', 'local_openeducationbadges'), 'notifyproblem');
+			}
 			$all_issuers = $client->get_issuers_all($clientid);
 			$issuers = $client->get_issuers($clientid);
 		} catch (Exception $e) {}
@@ -146,62 +153,76 @@ switch ($action) {
 		$table->id = 'oeb-clients';
 		$table->attributes = array('class' => 'oeb-clients-table');
 		$table->head = array(
+			get_string('status', 'local_openeducationbadges'),
 			get_string('clientname', 'local_openeducationbadges'),
 			get_string('clientid', 'local_openeducationbadges'),
 			get_string('activeissuers', 'local_openeducationbadges'),
 			get_string('actions', 'moodle')
 		);
 
-		$client_ids = [];
 		try {
 			$client = openeducation_client::get_instance();
-			$client_ids = $client->get_client_ids();
+			$clientrecords = $DB->get_records('local_oeb_oauth2');
 		} catch (Exception $e) {}
+
+		if ($client->exist_severed_connections()) {
+			echo $OUTPUT->notification(get_string('connectionproblemgeneral', 'local_openeducationbadges'), 'notifyproblem');
+		}
 
 		$editicon = new pix_icon('t/edit', get_string('edit'));
 		$editissuersicon = new pix_icon('t/editinline', get_string('editissuers', 'local_openeducationbadges'));
 		$deleteicon = new pix_icon('t/delete', get_string('delete'));
+		$active = $OUTPUT->pix_icon('agreed', get_string('active', 'local_openeducationbadges'), 'tool_policy');
+		$inactive = $OUTPUT->pix_icon('declined', get_string('oauth2problem', 'local_openeducationbadges'), 'tool_policy');
 
-		foreach ($client_ids as $client_id) {
+		foreach ($clientrecords as $record) {
+			$record_id = $record->id;
+			$client_id = $record->client_id;
+			$client_name = $record->client_name;
+
 			$row = new html_table_row();
 
-			$editurl = new moodle_url('/local/openeducationbadges/config.php?action=edit&id=' . $client_id);
+			$editurl = new moodle_url('/local/openeducationbadges/config.php?action=edit&id=' . $record_id);
 			$editaction = $OUTPUT->action_icon($editurl, $editicon);
 
-			$editissuersurl = new moodle_url('/local/openeducationbadges/config.php?action=issuers&id=' . $client_id);
+			$editissuersurl = new moodle_url('/local/openeducationbadges/config.php?action=issuers&id=' . $record_id);
 			$editissuersaction = $OUTPUT->action_icon($editissuersurl, $editissuersicon);
 
-			$deleteurl = new moodle_url('/local/openeducationbadges/config.php?action=delete&id=' . $client_id . '&sesskey=' . sesskey());
+			$deleteurl = new moodle_url('/local/openeducationbadges/config.php?action=delete&id=' . $record_id . '&sesskey=' . sesskey());
 			$deleteaction = $OUTPUT->action_icon($deleteurl, $deleteicon, new confirm_action(get_string('deleteclientconfirm', 'local_openeducationbadges')));
 
 			$icons = new html_table_cell($editaction . ' ' . $editissuersaction . ' ' . $deleteaction);
 
 			$issuers = [];
-			try {
-				$client = openeducation_client::get_instance();
-				$issuers =  $client->get_issuers($client_id);
+			$issuer_names = '';
 
-				$issuer_names = '';
-				foreach ($issuers as $issuer) {
-					if(empty($issuer_names)) {
-						$issuer_names .= $issuer['name'];
-					} else {
-						$issuer_names .= '<br>' . $issuer['name'];
-					}
+			if ($record->status) {
+				$status = $active;
+				try {
+					$issuers =  $client->get_issuers($record_id);
+				} catch (Exception $e) {}
+			} else {
+				$status = $inactive;
+				$icons = new html_table_cell($editaction . ' ' . $deleteaction);
+			}
+
+			foreach ($issuers as $issuer) {
+				if(empty($issuer_names)) {
+					$issuer_names .= $issuer['name'];
+				} else {
+					$issuer_names .= '<br>' . $issuer['name'];
 				}
+			}
 
-				$client_data = $client->get_client_data($client_id);
+			$row->cells = array(
+				$status,
+				$client_name,
+				$client_id,
+				$issuer_names,
+				$icons
+			);
 
-				$row->cells = array(
-					$client_data->client_name,
-					$client_data->client_id,
-					$issuer_names,
-					$icons
-				);
-
-				$table->data[] = $row;
-
-			} catch (Exception $e) {}
+			$table->data[] = $row;
 		}
 
 		echo html_writer::table($table);

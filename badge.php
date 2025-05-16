@@ -23,6 +23,7 @@
  */
 
 use classes\openeducation_badge;
+use classes\openeducation_client;
 
 require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/classes/badge.php');
@@ -47,6 +48,13 @@ $PAGE->set_title(get_string('oeb', 'local_openeducationbadges'));
 $PAGE->add_body_class('local-openeducationbadges');
 
 $content = '';
+
+try {
+	$client = openeducation_client::get_instance();
+	if ($client->exist_severed_connections()) {
+		$content .= $OUTPUT->notification(get_string('connectionproblemgeneral', 'local_openeducationbadges'), 'notifyproblem');
+	}
+} catch (Exception $e) {}
 
 try {
 	$badges = openeducation_badge::get_badges();

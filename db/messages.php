@@ -24,4 +24,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$messageproviders = array();
+$messageproviders = array(
+	'connectionproblem' => array(
+		'defaults' => array(
+			'email' => MESSAGE_DISALLOWED,
+			'popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_ENABLED,
+		),
+		'capability' => 'local/openeducationbadges:configure'
+	)
+);

@@ -56,12 +56,13 @@ along with Moodle. If not, see <https://www.gnu.org/licenses/gpl-3.0>.
 	height: 80px;
 }
 .local-openeducationbadges ul.badgelist .openeducation-badge-card .badgename {
+	display: block;
 	color: #515dc6;
 	font-weight: 700;
 	font-size: 16px;
 	line-height: 24px;
 	hyphens: auto;
-	word-wrap: break-word;
+	word-break: break-word;
 	margin: 0;
 }
 .local-openeducationbadges ul.badgelist .openeducation-badge-card .badgeissuer {
@@ -70,7 +71,7 @@ along with Moodle. If not, see <https://www.gnu.org/licenses/gpl-3.0>.
 	font-size: 12px;
 	line-height: 16px;
 	hyphens: auto;
-	word-wrap: break-word;
+	word-break: break-word;
 	margin: 4px 0 0;
 }
 .local-openeducationbadges ul.badgelist .openeducation-badge-card .badgedesc {

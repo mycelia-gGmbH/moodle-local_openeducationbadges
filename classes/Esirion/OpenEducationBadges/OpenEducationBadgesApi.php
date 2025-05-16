@@ -16,13 +16,16 @@ class OpenEducationBadgesApi {
 	private $store_token;
 	private $retrieve_token;
 
+	private $error_return = false;
+
 	public function __construct(
 			string $client_id = "",
 			string $client_secret = "",
 			string $username = "",
 			string $password = "",
 			callable $store_token = null,
-			callable $retrieve_token = null
+			callable $retrieve_token = null,
+			bool $error_return = false
 		) {
 
 		$this->client_id = $client_id;
@@ -31,6 +34,7 @@ class OpenEducationBadgesApi {
 		$this->password = $password;
 		$this->store_token = $store_token ?? [$this, 'store_token_default'];
 		$this->retrieve_token = $retrieve_token ?? [$this, 'retrieve_token_default'];
+		$this->error_return = $error_return;
 	}
 
 	public static function log($msg, $level = 'error') {
@@ -66,9 +70,10 @@ class OpenEducationBadgesApi {
 	/**
 	 * Get access token and the corresponding expiration timestamp.
 	 *
+	 * @param bool $fresh Flag for new/fresh token
 	 * @return array access token and expiration timestamp
 	 */
-	public function get_access_token() {
+	public function get_access_token(bool $fresh = false) {
 
 		$token = call_user_func($this->retrieve_token, $this);
 		if (!empty($token)) {
@@ -77,7 +82,7 @@ class OpenEducationBadgesApi {
 				unset($token);
 			}
 		}
-		if (empty($token)) {
+		if (empty($token) || $fresh) {
 			$token = $this->request_access_token();
 		}
 		return $token;
@@ -205,6 +210,10 @@ class OpenEducationBadgesApi {
 				),
 				'error'
 			);
+
+			if ($this->error_return) {
+				return $response;
+			}
 		}
 
 		return false;
@@ -243,16 +252,19 @@ class OpenEducationBadgesApi {
 		}
 
 		if (!empty($response)) {
+			if (empty($response['error'])) {
+				$token = array(
+					'access_token' => $response['access_token'],
+					'token_expires' => $response['expires_in'],
+					'token_retrieved' => $retrieved_time,
+				);
 
-			$token = array(
-				'access_token' => $response['access_token'],
-				'token_expires' => $response['expires_in'],
-				'token_retrieved' => $retrieved_time,
-			);
+				call_user_func($this->store_token, $token, $this);
 
-			call_user_func($this->store_token, $token, $this);
-
-			return $token;
+				return $token;
+			} else if ($this->error_return) {
+				return $response;
+			}
 		}
 	}
 
@@ -293,5 +305,9 @@ class OpenEducationBadgesApi {
 
 	public function get_client_id() {
 		return $this->client_id;
+	}
+
+	public function set_error_return($error_return) {
+		$this->error_return = $error_return;
 	}
 }

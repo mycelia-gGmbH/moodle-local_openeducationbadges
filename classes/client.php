@@ -27,6 +27,8 @@ namespace classes;
 use Esirion\OpenEducationBadges\OpenEducationBadgesApi;
 
 use moodle_exception;
+use context_system;
+use core\message\message;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -65,21 +67,28 @@ class openeducation_client {
 
 			$apis = [];
 
-			$clientrecords = $DB->get_records('local_oeb_oauth2');
+			$clientrecords = $DB->get_records('local_oeb_oauth2', array('status' => 1));
 			foreach ($clientrecords as $clientrecord) {
 				$api = new OpenEducationBadgesApi(
 					client_id: $clientrecord->client_id,
 					client_secret: $clientrecord->client_secret,
 					store_token: array(self::$client, 'store_token'),
-					retrieve_token: array(self::$client, 'retrieve_token')
+					retrieve_token: array(self::$client, 'retrieve_token'),
+					error_return: true
 				);
 
-				$res = $api->get_access_token();
+				$res = $api->get_access_token(true);
+				$api->set_error_return(false);
 
-				if (empty($res)) {
-					throw new moodle_exception(get_string('oauth2problem', 'local_openeducationbadges'));
-				} else {
-					$apis[$clientrecord->id] = $api;
+				if (!empty($res)) {
+					if(!empty($res['error']) && ($res['error'] == 'invalid client_id' || $res['error'] == 'invalid client_secret')) {
+						$clientrecord->status = 0;
+						$DB->update_record('local_oeb_oauth2', $clientrecord);
+
+						self::$client->notify_connection_problem($clientrecord->client_name);
+					} else {
+						$apis[$clientrecord->id] = $api;
+					}
 				}
 			}
 
@@ -110,10 +119,16 @@ class openeducation_client {
 			);
 
 			if (empty($issuerrecords)) {
-				$badges_data = array_merge($badges_data, $api->get_all_badges());
+				$badges = $api->get_all_badges();
+				if ($badges) {
+					$badges_data = array_merge($badges_data, $badges);
+				}
 			} else {
 				foreach ($issuerrecords as $key => $value) {
-					$badges_data = array_merge($badges_data, $api->get_badges($key));
+					$badges = $api->get_badges($key);
+					if ($badges) {
+						$badges_data = array_merge($badges_data, $badges);
+					}
 				}
 			}
 		}
@@ -202,7 +217,10 @@ class openeducation_client {
 			} else {
 				$all_badges = [];
 				foreach ($issuerrecords as $key => $value) {
-					$all_badges = array_merge($all_badges, $api->get_badges($key));
+					$badges = $api->get_badges($key);
+					if ($badges) {
+						$all_badges = array_merge($all_badges, $badges);
+					}
 				}
 			}
 
@@ -337,6 +355,7 @@ class openeducation_client {
 		);
 
 		if ($update) {
+			$record->status = 1;
 			$DB->update_record('local_oeb_oauth2', $record);
 			$apis[$record->id] = $api;
 		} else {
@@ -386,8 +405,6 @@ class openeducation_client {
      * @return bool Returns false on failure and true on success.
      */
     public function test_connection($client_id, $client_secret) {
-		global $DB;
-
 		$api = new OpenEducationBadgesApi(
 			client_id: $client_id,
 			client_secret: $client_secret,
@@ -400,6 +417,9 @@ class openeducation_client {
 		);
 
 		$res = $api->get_access_token();
+		if (empty($res) || !empty($res['error'])) {
+			return false;
+		}
 
 		return $res;
 	}
@@ -460,5 +480,45 @@ class openeducation_client {
 		$record->access_token = json_encode($token);
 
 		$DB->update_record('local_oeb_oauth2', $record);
+	}
+
+	/**
+	 * Do severed/broken API connections currently exist?
+	 *
+	 * @return boolean Returns true if they exist and false if not
+	 */
+	public function exist_severed_connections() {
+		global $DB;
+
+		return $DB->record_exists('local_oeb_oauth2', array('status' => 0));
+	}
+
+	/**
+	 * Notify the admins of a connection problem
+	 *
+	 * @param string $name The name of the problematic connection.
+	 * @return null
+	 */
+	public function notify_connection_problem($name) {
+		$messageconnectionproblem = new \core\message\message();
+		$messageconnectionproblem->component = 'local_openeducationbadges';
+		$messageconnectionproblem->name = 'connectionproblem';
+		$messageconnectionproblem->userfrom = \core_user::get_noreply_user();
+		$messageconnectionproblem->subject = get_string('connectionproblemsubject', 'local_openeducationbadges', ['name' => $name]);
+		$messageconnectionproblem->fullmessage = get_string('connectionproblembody', 'local_openeducationbadges', ['name' => $name]);
+		$messageconnectionproblem->fullmessagehtml = get_string('connectionproblembody', 'local_openeducationbadges', ['name' => $name]);
+		$messageconnectionproblem->fullmessageformat = FORMAT_MARKDOWN;
+		$messageconnectionproblem->notification = 1;
+
+		$capability = 'local/openeducationbadges:configure';
+		$context = context_system::instance();
+
+		$managerusers = get_admins();
+		foreach ($managerusers as $manageruser) {
+			if (has_capability($capability, $context, $manageruser)) {
+				$messageconnectionproblem->userto = $manageruser;
+				message_send($messageconnectionproblem);
+			}
+		}
 	}
 }
