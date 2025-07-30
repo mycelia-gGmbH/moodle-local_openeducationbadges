@@ -15,22 +15,33 @@
 // along with Moodle. If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Event observers. See https://docs.moodle.org/dev/Events_API for details.
+ * Privacy Subsystem.
  *
  * @package    local_openeducationbadges
  * @copyright  2024 Esirion AG
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace local_openeducationbadges\privacy;
 
-$observers = [
-    [
-        'eventname' => '\core\event\course_completed',
-        'callback' => 'local_openeducationbadges_observer::course_completed',
-    ],
-    [
-        'eventname' => '\core\event\course_module_completion_updated',
-        'callback' => 'local_openeducationbadges_observer::course_module_completed',
-    ],
-];
+/**
+ * Privacy Subsystem class.
+ *
+ * @package    local_openeducationbadges
+ * @copyright  2024 Esirion AG
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class provider implements
+    // This plugin does not store any personal user data.
+    \core_privacy\local\metadata\null_provider {
+
+    /**
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return  string
+     */
+    public static function get_reason(): string {
+        return 'privacy:metadata';
+    }
+}

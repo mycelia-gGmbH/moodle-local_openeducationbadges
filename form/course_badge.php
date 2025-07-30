@@ -12,13 +12,13 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <https://www.gnu.org/licenses/gpl-3.0>.
+// along with Moodle. If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Course completion form for badges.
  *
  * @package    local_openeducationbadges
- * @copyright  2024, esirion
+ * @copyright  2024 Esirion AG
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -31,61 +31,83 @@ require_once($CFG->libdir . '/formslib.php');
 /**
  * Course completion badge form.
  *
- * @copyright  2024, esirion
+ * @package    local_openeducationbadges
+ * @copyright  2024 Esirion AG
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class oeb_course_badge_form extends moodleform {
+    /** @var int The id of the current badge */
+    private $badgeid = 0;
 
-	private $badgeid = 0;
-	private $courseid = 0;
+    /** @var int The id of the current course */
+    private $courseid = 0;
 
-	public function __construct($actionurl, $badgeid, $courseid) {
-		$this->badgeid = $badgeid;
-		$this->courseid = $courseid;
-		parent::__construct($actionurl);
-	}
+    /**
+     * Constructor.
+     *
+     * @param string $actionurl
+     * @param int $badgeid
+     * @param int $courseid
+     */
+    public function __construct($actionurl, $badgeid, $courseid) {
+        $this->badgeid = $badgeid;
+        $this->courseid = $courseid;
+        parent::__construct($actionurl);
+    }
 
-	public function definition() {
-		$mform = $this->_form;
+    /**
+     * Add elements to form.
+     */
+    public function definition() {
+        $mform = $this->_form;
 
-		$mform->addElement('advcheckbox', 'coursecompletion_'.strval($this->badgeid), get_string('coursecompletion', 'local_openeducationbadges'));
+        $mform->addElement(
+            'advcheckbox',
+            'coursecompletion_'.strval($this->badgeid),
+            get_string('coursecompletion', 'local_openeducationbadges')
+        );
 
-		$actvityOptions = $this->getActivityOptions();
-		if (!empty($actvityOptions)) {
-			$mform->addElement('static', 'activities',
-				NULL,
-   			get_string('activitycompletion', 'local_openeducationbadges')
-			);
+        $actvityoptions = $this->get_activity_options();
+        if (!empty($actvityoptions)) {
+            $mform->addElement(
+                'static',
+                'activities',
+                null,
+                get_string('activitycompletion', 'local_openeducationbadges')
+            );
 
-			$mform->addElement('html', '<div class="activitylist">');
-			foreach ($actvityOptions as $activityid => $activityname) {
-				$mform->addElement('advcheckbox', 'activitycompletion_'.strval($this->badgeid).'_'.strval($activityid), $activityname);
-			}
-			$mform->addElement('html', '</div>');
-		}
+            $mform->addElement('html', '<div class="activitylist">');
+            foreach ($actvityoptions as $activityid => $activityname) {
+                $mform->addElement(
+                    'advcheckbox',
+                    'activitycompletion_'.strval($this->badgeid).'_'.strval($activityid),
+                    $activityname
+                );
+            }
+            $mform->addElement('html', '</div>');
+        }
 
-		$mform->addElement('submit', 'submit_'.strval($this->badgeid), get_string('saveawarding', 'local_openeducationbadges'));
-	}
+        $mform->addElement('submit', 'submit_'.strval($this->badgeid), get_string('saveawarding', 'local_openeducationbadges'));
+    }
 
-	public function get_data() {
-		$data = parent::get_data();
+    /**
+     * Get a list of all course activities with completion criterions
+     *
+     * @return array A list of activities
+     */
+    public function get_activity_options() {
 
-		return $data;
-	}
+        $activities = [];
 
-	public function getActivityOptions() {
+        $modinfo = get_fast_modinfo($this->courseid);
+        $cms = $modinfo->get_cms();
 
-		$activities = [];
+        foreach ($cms as $cm) {
+            if ($cm->completion) {
+                $activities[$cm->id] = $cm->get_formatted_name();
+            }
+        }
 
-		$modinfo = get_fast_modinfo($this->courseid);
-		$cms = $modinfo->get_cms();
-
-		foreach ($cms as $cm) {
-			if ($cm->completion) {
-				$activities[$cm->id] = $cm->get_formatted_name();
-			}
-		}
-
-		return $activities;
-	}
+        return $activities;
+    }
 }

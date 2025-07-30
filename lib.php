@@ -12,17 +12,15 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <https://www.gnu.org/licenses/gpl-3.0>.
+// along with Moodle. If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Version information. See https://docs.moodle.org/dev/version.php for more info.
+ * Lib for Open Education Badges plugin.
  *
  * @package    local_openeducationbadges
- * @copyright  2024 esirion
+ * @copyright  2024 Esirion AG
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Adds the Open Education Badges links to Moodle's settings navigation.
@@ -30,12 +28,12 @@ defined('MOODLE_INTERNAL') || die();
  * @param settings_navigation $navigation
  */
 function local_openeducationbadges_extend_settings_navigation(settings_navigation $navigation) {
-	global $COURSE;
+    global $COURSE;
 
-	if (($branch = $navigation->get('courseadmin'))) {
-		$branch = local_openeducationbadges_add_course_admin_container($branch);
-		local_openeducationbadges_add_course_admin_link($branch);
-	}
+    if (($branch = $navigation->get('courseadmin'))) {
+        $branch = local_openeducationbadges_add_course_admin_container($branch);
+        local_openeducationbadges_add_course_admin_link($branch);
+    }
 }
 
 /**
@@ -44,11 +42,17 @@ function local_openeducationbadges_extend_settings_navigation(settings_navigatio
  * @param type& $branch Branch where to add the container node.
  */
 function local_openeducationbadges_add_course_admin_container(&$branch) {
-	global $COURSE;
+    global $COURSE;
 
-	$node = navigation_node::create(get_string('oeb', 'local_openeducationbadges'), null, navigation_node::TYPE_CONTAINER, null, 'oeb');
-	$course_completion_node = $branch->find('coursecompletion', navigation_node::TYPE_SETTING);
-	return $branch->add_node($node, $course_completion_node != false ? 'coursecompletion' : null);
+    $node = navigation_node::create(
+        get_string('oeb', 'local_openeducationbadges'),
+        null,
+        navigation_node::TYPE_CONTAINER,
+        null,
+        'oeb'
+    );
+    $coursecompletionnode = $branch->find('coursecompletion', navigation_node::TYPE_SETTING);
+    return $branch->add_node($node, $coursecompletionnode != false ? 'coursecompletion' : null);
 }
 
 /**
@@ -58,29 +62,29 @@ function local_openeducationbadges_add_course_admin_container(&$branch) {
  * @param type& $branch
  */
 function local_openeducationbadges_add_course_admin_link(&$branch) {
-	global $COURSE;
+    global $COURSE;
 
-	$cap_create_course = has_capability(
-		'moodle/course:create',
-		context_course::instance($COURSE->id)
-	);
-	$cap_update_course = has_capability(
-		'moodle/course:update',
-		context_course::instance($COURSE->id)
-	);
+    $capcreatecourse = has_capability(
+        'moodle/course:create',
+        context_course::instance($COURSE->id)
+    );
+    $capupdatecourse = has_capability(
+        'moodle/course:update',
+        context_course::instance($COURSE->id)
+    );
 
-	if ($cap_create_course || $cap_update_course) {
-		$node = navigation_node::create(
-			get_string('oeb', 'local_openeducationbadges'),
-			new moodle_url(
-				'/local/openeducationbadges/badge.php',
-				array(
-					'courseid' => $COURSE->id
-				)
-			)
-		);
-		$branch->add_node($node);
-	}
+    if ($capcreatecourse || $capupdatecourse) {
+        $node = navigation_node::create(
+            get_string('oeb', 'local_openeducationbadges'),
+            new moodle_url(
+                '/local/openeducationbadges/badge.php',
+                [
+                    'courseid' => $COURSE->id,
+                ]
+            )
+        );
+        $branch->add_node($node);
+    }
 }
 
 /**
@@ -92,16 +96,16 @@ function local_openeducationbadges_add_course_admin_link(&$branch) {
  * @param \moodle_course $course
  */
 function local_openeducationbadges_myprofile_navigation(\core_user\output\myprofile\tree $tree, $user, $iscurrentuser, $course) {
-	global $PAGE, $DB, $CFG;
+    global $PAGE, $DB, $CFG;
 
-	$category = new core_user\output\myprofile\category(
-		'local_openeducationbadges/badges',
-		get_string('profilebadgelist', 'local_openeducationbadges'),
-		null
-	);
-	$tree->add_category($category);
+    $category = new core_user\output\myprofile\category(
+        'local_openeducationbadges/badges',
+        get_string('profilebadgelist', 'local_openeducationbadges'),
+        null
+    );
+    $tree->add_category($category);
 
-	addopeneducationbadges($tree, $user);
+    addopeneducationbadges($tree, $user);
 }
 
 /**
@@ -111,27 +115,27 @@ function local_openeducationbadges_myprofile_navigation(\core_user\output\myprof
  * @param stdClass $user
  */
 function addopeneducationbadges($tree, $user): void {
-	global $PAGE, $DB;
+    global $PAGE, $DB;
 
-	$category = new core_user\output\myprofile\category(
-		'local_openeducationbadges/badgesplatform',
-		get_string('badgesplatform', 'local_openeducationbadges'),
-		null
-	);
-	$tree->add_category($category);
+    $category = new core_user\output\myprofile\category(
+        'local_openeducationbadges/badgesplatform',
+        get_string('badgesplatform', 'local_openeducationbadges'),
+        null
+    );
+    $tree->add_category($category);
 
-	$renderer = $PAGE->get_renderer('local_openeducationbadges');
-	$content = $renderer->render_user_assertions($user);
+    $renderer = $PAGE->get_renderer('local_openeducationbadges');
+    $content = $renderer->render_user_assertions($user);
 
-	$localnode = new core_user\output\myprofile\node(
-		'local_openeducationbadges/badgesplatform',
-		'openeducationbadges',
-		'',
-		null,
-		null,
-		$content,
-		null,
-		'local-openeducationbadges'
-	);
-	$tree->add_node($localnode);
+    $localnode = new core_user\output\myprofile\node(
+        'local_openeducationbadges/badgesplatform',
+        'openeducationbadges',
+        '',
+        null,
+        null,
+        $content,
+        null,
+        'path-local-openeducationbadges'
+    );
+    $tree->add_node($localnode);
 }

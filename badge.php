@@ -12,20 +12,20 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <https://www.gnu.org/licenses/gpl-3.0>.
+// along with Moodle. If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Page for displaying content closely related to badges.
  *
  * @package    local_openeducationbadges
- * @copyright  2024, esirion
+ * @copyright  2024 Esirion AG
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 use classes\openeducation_badge;
 use classes\openeducation_client;
 
-require_once(__DIR__ . '/../../config.php');
+require(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/classes/badge.php');
 
 $courseid = optional_param('courseid', null, PARAM_INT);
@@ -35,32 +35,33 @@ $url = new moodle_url('/local/openeducationbadges/badge.php');
 
 // Site context.
 if (empty($courseid)) {
-	require_login();
+    require_login();
 } else { // Course context.
-	$url->param('courseid', $courseid);
-	require_login($courseid);
+    $url->param('courseid', $courseid);
+    require_login($courseid);
 }
 
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 $PAGE->set_pagelayout(empty($courseid) ? 'admin' : 'course');
 $PAGE->set_title(get_string('oeb', 'local_openeducationbadges'));
-$PAGE->add_body_class('local-openeducationbadges');
 
 $content = '';
 
 try {
-	$client = openeducation_client::get_instance();
-	if ($client->exist_severed_connections()) {
-		$content .= $OUTPUT->notification(get_string('connectionproblemgeneral', 'local_openeducationbadges'), 'notifyproblem');
-	}
-} catch (Exception $e) {}
+    $client = openeducation_client::get_instance();
+    if ($client->exist_severed_connections()) {
+        $content .= $OUTPUT->notification(get_string('connectionproblemgeneral', 'local_openeducationbadges'), 'notifyproblem');
+    }
+} catch (Exception $e) {
+    $content .= $OUTPUT->notification($e->getMessage(), 'notifyproblem');
+}
 
 try {
-	$badges = openeducation_badge::get_badges();
-	$content .= $PAGE->get_renderer('local_openeducationbadges')->render_badgelist($badges, $context);
+    $badges = openeducation_badge::get_badges();
+    $content .= $PAGE->get_renderer('local_openeducationbadges')->render_badgelist($badges, $context);
 } catch (Exception $e) {
-	$content .= $OUTPUT->notification($e->getMessage(), 'notifyproblem');
+    $content .= $OUTPUT->notification($e->getMessage(), 'notifyproblem');
 }
 
 echo $OUTPUT->header();

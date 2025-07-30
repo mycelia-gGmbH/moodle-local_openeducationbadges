@@ -8,14 +8,24 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <https://www.gnu.org/licenses/gpl-3.0>.
+// along with Moodle. If not, see <https://www.gnu.org/licenses/>.
+
+/**
+ * Open Education Badges plugin event observers.
+ *
+ * @package    local_openeducationbadges
+ * @copyright  2024 Esirion AG
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 use classes\openeducation_badge;
 use classes\openeducation_client;
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/badge.php');
 require_once(__DIR__ . '/client.php');
@@ -24,101 +34,106 @@ require_once(__DIR__ . '/client.php');
  * Class for event observers
  *
  * @package    local_openeducationbadges
- * @copyright  2024, esirion
+ * @copyright  2024 Esirion AG
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class local_openeducationbadges_observer
-{
+class local_openeducationbadges_observer {
 
-	/**
-	 * Course completed observer
-	 *
-	 * @param \core\event\course_completed $event
-	 * @return boolean Returns true if everything went ok.
-	 */
-	public static function course_completed(\core\event\course_completed $event) {
-		$eventdata = new stdClass();
-		$eventdata->userid = $event->relateduserid;
-		$eventdata->course = $event->courseid;
-		return self::course_user_completion_award($eventdata);
-	}
+    /**
+     * Course completed observer
+     *
+     * @param \core\event\course_completed $event
+     * @return boolean Returns true if everything went ok.
+     */
+    public static function course_completed(\core\event\course_completed $event) {
+        $eventdata = new stdClass();
+        $eventdata->userid = $event->relateduserid;
+        $eventdata->course = $event->courseid;
+        return self::course_user_completion_award($eventdata);
+    }
 
-	/**
-	 * Issues badges when a course is completed.
-	 *
-	 * @param stdClass $eventdata
-	 */
-	private static function course_user_completion_award(stdClass $eventdata) {
-		global $DB;
+    /**
+     * Issues badges when a course is completed.
+     *
+     * @param stdClass $eventdata
+     */
+    private static function course_user_completion_award(stdClass $eventdata) {
+        global $DB;
 
-		$user = $DB->get_record('user', array('id' => $eventdata->userid));
+        $user = $DB->get_record('user', ['id' => $eventdata->userid]);
 
-		$records = $DB->get_records(
-			'local_oeb_course_badge',
-			array(
-				'courseid' => $eventdata->course,
-				'completion_method' => openeducation_badge::COMPLETION_TYPE_COURSE
-			),
-			'',
-			'badgeid'
-		);
-		$badge_ids = [];
-		foreach ($records as $record) {
-			$badge_ids[] = $record->badgeid;
-		}
+        $records = $DB->get_records(
+            'local_oeb_course_badge',
+            [
+                'courseid' => $eventdata->course,
+                'completion_method' => openeducation_badge::COMPLETION_TYPE_COURSE,
+            ],
+            '',
+            'badgeid'
+        );
+        $badgeids = [];
+        foreach ($records as $record) {
+            $badgeids[] = $record->badgeid;
+        }
 
-		try {
-			$client = openeducation_client::get_instance();
-			$client->issue_badges($user, $badge_ids);
-		} catch (Exception $e) {}
-	}
+        try {
+            $client = openeducation_client::get_instance();
+            $client->issue_badges($user, $badgeids);
+        } catch (Exception $e) {
+            // TODO remember and try issuing later again.
+            // In the mean time do not disturb user.
+        }
+    }
 
-	/**
-	 * Course modules completion observer
-	 *
-	 * @param \core\event\course_module_completion_updated $event
-	 * @return boolean Returns true if everything went ok.
-	 */
-	public static function course_module_completed(\core\event\course_module_completion_updated $event) {
-		$record_snapshot = $event->get_record_snapshot('course_modules_completion', $event->objectid);
-		$context = context_module::instance($record_snapshot->coursemoduleid);
-		if ($context && $context->get_course_context()) {
-			$eventdata = new stdClass();
-			$eventdata->userid = $event->relateduserid;
-			$eventdata->course = $event->courseid;
-			$eventdata->coursemoduleid = $record_snapshot->coursemoduleid;
-			return self::course_module_user_completion_award($eventdata);
-		}
-	}
+    /**
+     * Course modules completion observer
+     *
+     * @param \core\event\course_module_completion_updated $event
+     * @return boolean Returns true if everything went ok.
+     */
+    public static function course_module_completed(\core\event\course_module_completion_updated $event) {
+        $recordsnapshot = $event->get_record_snapshot('course_modules_completion', $event->objectid);
+        $context = context_module::instance($recordsnapshot->coursemoduleid);
+        if ($context && $context->get_course_context()) {
+            $eventdata = new stdClass();
+            $eventdata->userid = $event->relateduserid;
+            $eventdata->course = $event->courseid;
+            $eventdata->coursemoduleid = $recordsnapshot->coursemoduleid;
+            return self::course_module_user_completion_award($eventdata);
+        }
+    }
 
-	/**
-	 * Issues badges when an activity is completed.
-	 *
-	 * @param stdClass $eventdata
-	 */
-	private static function course_module_user_completion_award(stdClass $eventdata) {
-		global $DB;
+    /**
+     * Issues badges when an activity is completed.
+     *
+     * @param stdClass $eventdata
+     */
+    private static function course_module_user_completion_award(stdClass $eventdata) {
+        global $DB;
 
-		$user = $DB->get_record('user', array('id' => $eventdata->userid));
+        $user = $DB->get_record('user', ['id' => $eventdata->userid]);
 
-		$records = $DB->get_records(
-			'local_oeb_course_badge',
-			array(
-				'courseid' => $eventdata->course,
-				'activityid' => $eventdata->coursemoduleid,
-				'completion_method' => openeducation_badge::COMPLETION_TYPE_ACTIVITY
-			),
-			'',
-			'badgeid'
-		);
-		$badge_ids = [];
-		foreach ($records as $record) {
-			$badge_ids[] = $record->badgeid;
-		}
+        $records = $DB->get_records(
+            'local_oeb_course_badge',
+            [
+                'courseid' => $eventdata->course,
+                'activityid' => $eventdata->coursemoduleid,
+                'completion_method' => openeducation_badge::COMPLETION_TYPE_ACTIVITY,
+            ],
+            '',
+            'badgeid'
+        );
+        $badgeids = [];
+        foreach ($records as $record) {
+            $badgeids[] = $record->badgeid;
+        }
 
-		try {
-			$client = openeducation_client::get_instance();
-			$client->issue_badges($user, $badge_ids);
-		} catch (Exception $e) {}
-	}
+        try {
+            $client = openeducation_client::get_instance();
+            $client->issue_badges($user, $badgeids);
+        } catch (Exception $e) {
+            // TODO remember and try issuing later again.
+            // In the mean time do not disturb user.
+        }
+    }
 }

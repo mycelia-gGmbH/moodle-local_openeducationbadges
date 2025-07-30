@@ -12,13 +12,13 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <https://www.gnu.org/licenses/gpl-3.0>.
+// along with Moodle. If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * German locale for local_openeducationbadges.
  *
  * @package    local_openeducationbadges
- * @copyright  2024, esirion
+ * @copyright  2024 Esirion AG
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -43,8 +43,8 @@ $string['clientname'] = 'Name der Verbindung';
 $string['clients'] = 'Verbindungen';
 $string['clientsaved'] = 'Verbindung gespeichert';
 $string['clientsecret'] = 'Client secret';
-$string['connectionsevered'] = 'Diese Verbindung zu Open Education Badges wurde getrennt. Bitte überprüfen Sie ihre Plugin Credentials, die Verfügbarkeit des OEB Servers oder ähnliches und speichern Sie die Verbindung erneut.';
 $string['connectionproblemgeneral'] = 'Es ist ein Problem mit ihrer Verbindungen zu Open Education Badges aufgetreten. Bitte überprüfen Sie ihre Plugin Credentials, die Verfügbarkeit des OEB Servers oder ähnliches.';
+$string['connectionsevered'] = 'Diese Verbindung zu Open Education Badges wurde getrennt. Bitte überprüfen Sie ihre Plugin Credentials, die Verfügbarkeit des OEB Servers oder ähnliches und speichern Sie die Verbindung erneut.';
 $string['coursecompletion'] = 'bei Kursabschluss';
 $string['deleteclientconfirm'] = 'Sind Sie sicher, dass Sie diese Verbindung entfernen wollen?';
 $string['editissuers'] = 'Institutionen anpassen';
@@ -70,5 +70,7 @@ $string['status'] = 'Status';
 $string['clientid_help'] = 'Client ID ihres openbadges.education Account.';
 $string['clientsecret_help'] = 'Melden Sie sich bei Ihrem openbadges.education Account an und navigieren Sie zu "App Integration". Dort können Sie das Client secret finden.';
 
-$string['connectionproblemsubject'] = 'Es ist ein Problem mit der Verbindung {$a->name} aufgetreten.';
 $string['connectionproblembody'] = 'Es ist ein Problem mit der Verbindung {$a->name} zu Open Education Badges aufgetreten. Bitte überprüfen Sie ihre Plugin Credentials, die Verfügbarkeit des OEB Servers oder ähnliches und speichern Sie die Verbindung erneut.';
+$string['connectionproblemsubject'] = 'Es ist ein Problem mit der Verbindung {$a->name} aufgetreten.';
+
+$string['privacy:metadata'] = 'Dieses Plugin nutzt nur die bereits im Moodle Core System gespeicherten User Informationen.';

@@ -12,13 +12,13 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <https://www.gnu.org/licenses/gpl-3.0>.
+// along with Moodle. If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Open Education Badges Install script. See https://docs.moodle.org/dev/Upgrade_API for details.
  *
  * @package    local_openeducationbadges
- * @copyright  2024, esirion
+ * @copyright  2024 Esirion AG
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -28,12 +28,12 @@
  * @return boolean
  **/
 function xmldb_local_openeducationbadges_install() {
-	global $CFG, $DB;
-	$newpkidir = $CFG->dataroot . '/local_openeducationbadges/pki/';
+    global $CFG, $DB;
+    $newpkidir = $CFG->dataroot . '/local_openeducationbadges/pki/';
 
-	if (!is_dir($newpkidir)) {
-		mkdir($newpkidir, $CFG->directorypermissions, true);
-	}
+    if (!is_dir($newpkidir)) {
+        mkdir($newpkidir, $CFG->directorypermissions, true);
+    }
 
-	return true;
+    return true;
 }

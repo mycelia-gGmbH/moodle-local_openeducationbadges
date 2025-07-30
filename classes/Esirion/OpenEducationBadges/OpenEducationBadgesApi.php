@@ -1,313 +1,427 @@
 <?php
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle. If not, see <https://www.gnu.org/licenses/>.
 
+/**
+ * Open Education Badges API Interface.
+ *
+ * @package    local_openeducationbadges
+ * @copyright  2024 Esirion AG
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 namespace Esirion\OpenEducationBadges;
 
+/**
+ * Class for Open Education Badges API Interface.
+ *
+ * @package    local_openeducationbadges
+ * @copyright  2024 Esirion AG
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class OpenEducationBadgesApi {
+    /** @var string Base URL of Open Educational Badges API */
+    private $apibase = "https://api.openbadges.education/";
 
-	private $api_base = "https://api.openbadges.education/";
+    /** @var string Client id */
+    private $clientid = "";
+    /** @var string Client secret */
+    private $clientsecret = "";
 
-	private $client_id = "";
-	private $client_secret = "";
+    /** @var string Client username */
+    private $username = "";
+    /** @var string Client passwort */
+    private $password = "";
 
-	private $username = "";
-	private $password = "";
+    /** @var callable Function to store the received token */
+    private $storetoken;
+    /** @var callable Function to retrieve the stored token */
+    private $retrievetoken;
 
-	private $store_token;
-	private $retrieve_token;
+    /** @var bool Flag to determine if an error should be returned */
+    private $errorreturn = false;
 
-	private $error_return = false;
+    /**
+     * Constructor.
+     *
+     * @param string $clientid
+     * @param string $clientsecret
+     * @param string $username
+     * @param string $password
+     * @param callable|null $storetoken
+     * @param callable|null $retrievetoken
+     * @param bool $errorreturn
+     */
+    public function __construct(
+            string $clientid = "",
+            string $clientsecret = "",
+            string $username = "",
+            string $password = "",
+            callable|null $storetoken = null,
+            callable|null $retrievetoken = null,
+            bool $errorreturn = false
+        ) {
 
-	public function __construct(
-			string $client_id = "",
-			string $client_secret = "",
-			string $username = "",
-			string $password = "",
-			callable $store_token = null,
-			callable $retrieve_token = null,
-			bool $error_return = false
-		) {
+        $this->clientid = $clientid;
+        $this->clientsecret = $clientsecret;
+        $this->username = $username;
+        $this->password = $password;
+        $this->storetoken = $storetoken ?? [$this, 'store_token_default'];
+        $this->retrievetoken = $retrievetoken ?? [$this, 'retrieve_token_default'];
+        $this->errorreturn = $errorreturn;
+    }
 
-		$this->client_id = $client_id;
-		$this->client_secret = $client_secret;
-		$this->username = $username;
-		$this->password = $password;
-		$this->store_token = $store_token ?? [$this, 'store_token_default'];
-		$this->retrieve_token = $retrieve_token ?? [$this, 'retrieve_token_default'];
-		$this->error_return = $error_return;
-	}
+    /**
+     * Logs a message with a specific level
+     *
+     * @param string $msg Message to log
+     * @param string $level log level
+     */
+    public static function log($msg, $level = 'error') {
+        // TODO Write logging function.
+    }
 
-	public static function log($msg, $level = 'error') {
-		// if (empty(self::$logger)) {
-		// 	self::$logger = wc_get_logger();
-		// }
+    /**
+     * Default function for storing access token
+     *
+     * @param string $token Information to store
+     */
+    private function store_token_default($token) {
+        file_put_contents(
+            'access_token.json',
+            json_encode($token)
+        );
+    }
 
-		// self::$logger->log(
-		// 	$level,
-		// 	$msg,
-		// 	[
-		// 		'source' => $source
-		// 	]
-		// );
+    /**
+     * Default function for retrieving access token
+     *
+     * @return array access token
+     */
+    private function retrieve_token_default() {
+        return json_decode(
+            file_get_contents('access_token.json'),
+            JSON_OBJECT_AS_ARRAY
+        );
+    }
 
-		// var_export(['log', $level, $msg]);
-	}
+    /**
+     * Get access token and the corresponding expiration timestamp.
+     *
+     * @param bool $fresh Flag for new/fresh token
+     * @return array access token and expiration timestamp
+     */
+    public function get_access_token(bool $fresh = false) {
 
-	private function store_token_default($token) {
-		file_put_contents(
-			'access_token.json',
-			json_encode($token)
-		);
-	}
+        $token = call_user_func($this->retrievetoken, $this);
+        if (!empty($token)) {
+            // Unset token if expired.
+            if ($token['token_retrieved'] + $token['token_expires'] <= time()) {
+                unset($token);
+            }
+        }
+        if (empty($token) || $fresh) {
+            $token = $this->request_access_token();
+        }
+        return $token;
+    }
 
-	private function retrieve_token_default() {
-		return json_decode(
-			file_get_contents('access_token.json'),
-			JSON_OBJECT_AS_ARRAY
-		);
-	}
+    /**
+     * API request
+     *
+     * @param string $method
+     * @param string $endpoint
+     * @param array $params
+     * @return mixed
+     */
+    public function api_request(string $method, string $endpoint, array $params) {
 
-	/**
-	 * Get access token and the corresponding expiration timestamp.
-	 *
-	 * @param bool $fresh Flag for new/fresh token
-	 * @return array access token and expiration timestamp
-	 */
-	public function get_access_token(bool $fresh = false) {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-		$token = call_user_func($this->retrieve_token, $this);
-		if (!empty($token)) {
-			// unset token if expired
-			if ($token['token_retrieved'] + $token['token_expires'] <= time()) {
-				unset($token);
-			}
-		}
-		if (empty($token) || $fresh) {
-			$token = $this->request_access_token();
-		}
-		return $token;
-	}
+        $headerparams = [];
+        $headerparams['Accept'] = 'application/json';
 
-	/**
-	 * API request
-	 *
-	 * @param string $method
-	 * @param string $endpoint
-	 * @param array $params
-	 * @return mixed
-	 */
-	public function api_request(string $method, string $endpoint, array $params) {
+        $isauth = false;
+        // Authorization.
+        if (strpos($endpoint, 'o/token/') === 0) {
+            // Auth using client id.
+            if (!empty($this->clientid) && !empty($this->clientsecret)) {
+                $bearer = base64_encode($this->clientid . ":" . $this->clientsecret);
+                $headerparams['Authorization'] = 'Basic ' . $bearer;
+                $isauth = true;
+            } else if (!empty($this->username) && !empty($this->password)) { // Auth using username and password.
+                $isauth = true;
+            }
+        } else { // Everything else.
+            $token = $this->get_access_token();
+            $headerparams['Authorization'] = 'Bearer ' . $token['access_token'];
+        }
 
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_HEADER, False);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, True);
+        $url = $this->apibase . $endpoint;
 
-		$headerParams = [];
-		$headerParams['Accept'] = 'application/json';
+        $payload = http_build_query($params, "", "&");
 
+        if ($method === 'get') {
 
-		$is_auth = false;
-		// authorization
-		if (strpos($endpoint, 'o/token/') === 0) {
-			// auth using client_id
-			if (!empty($this->client_id) && !empty($this->client_secret)) {
-				$bearer = base64_encode($this->client_id . ":" . $this->client_secret);
-				$headerParams['Authorization'] = 'Basic ' . $bearer;
-				$is_auth = true;
-			// auth using username and password
-			} else if (!empty($this->username) && !empty($this->password)) {
-				$is_auth = true;
-			}
-		// everything else
-		} else {
-			$token = $this->get_access_token();
-			$headerParams['Authorization'] = 'Bearer ' . $token['access_token'];
-		}
+            $url .= '?'.$payload;
 
+        } else if ($method === 'post' || $method == 'put') {
 
-		$url = $this->api_base . $endpoint;
+            if (!empty($params)) {
+                if ($isauth) {
+                    $headerparams['Content-Type'] = 'application/x-www-form-urlencoded';
+                } else {
+                    $headerparams['Content-Type'] = 'application/json';
+                    $payload = json_encode($params);
+                }
+            }
+            if ($method == 'post') {
+                curl_setopt($ch, CURLOPT_POST, true);
+            } else {
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+            }
 
-		$payload = http_build_query($params, "", "&");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
 
-		if ($method === 'get') {
+        } else if ($method === 'delete') {
 
-			$url .= '?'.$payload;
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
 
-		} else if ($method === 'post' || $method == 'put') {
+        } else {
+            return false;
+        }
 
-			if (!empty($params)) {
-				if ($is_auth) {
-					$headerParams['Content-Type'] = 'application/x-www-form-urlencoded';
-				} else {
-					$headerParams['Content-Type'] = 'application/json';
-					$payload = json_encode($params);
-				}
-			}
-			if ($method == 'post') {
-				curl_setopt($ch, CURLOPT_POST, True);
-			} else {
-				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-			}
+        // Set URL.
+        curl_setopt($ch, CURLOPT_URL, $url);
 
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        // Set Headers.
+        $headers = [];
+        foreach ($headerparams as $key => $val) {
+            $headers[] = "$key: $val";
+        }
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-		} else if ($method === 'delete') {
+        self::log(
+            'Request: ' . var_export(
+                [
+                    'url' => $url,
+                    'payload' => $payload,
+                    'headers' => $headers,
+                ],
+                true
+            ),
+            'info'
+        );
 
-			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+        $response = curl_exec($ch);
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
 
-		} else {
-			return false;
-		}
+        self::log('Response: ' . var_export(
+            $response,
+            'info'
+        ));
 
-		// set URL
-		curl_setopt($ch, CURLOPT_URL, $url);
+        // Decode response available.
+        if (!empty($response)) {
+            $response = json_decode($response, true);
+        }
 
-		// set Headers
-		$headers = [];
-		foreach ($headerParams as $key => $val) {
-			$headers[] = "$key: $val";
-		}
-		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        if ($httpcode >= 200 && $httpcode <= 300) {
 
-		self::log(
-			'Request: ' . var_export(
-				[
-					'url'=>$url,
-					'payload'=>$payload,
-					'headers'=>$headers
-				],
-				true
-			),
-			'info'
-		);
+            return $response;
 
-		$response = curl_exec($ch);
-		$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-		curl_close($ch);
+        } else {
+            self::log(
+                'API Error: ' . var_export(
+                    [
+                        'response' => $response,
+                        'httpcode' => $httpcode,
+                    ],
+                    true
+                ),
+                'error'
+            );
 
-		self::log('Response: ' . var_export(
-			$response,
-			'info'
-		));
+            if ($this->errorreturn) {
+                return $response;
+            }
+        }
 
-		// decode response available
-		if (!empty($response)) {
-			$response = json_decode($response, true);
-		}
+        return false;
+    }
 
-		if ($http_code >= 200 && $http_code <= 300) {
+    /**
+     * API request with get method
+     *
+     * @param string $endpoint
+     * @param array $params
+     * @return mixed request response
+     */
+    private function get($endpoint, $params) {
+        return $this->api_request('get', $endpoint, $params);
+    }
+    /**
+     * API request with post method
+     *
+     * @param string $endpoint
+     * @param array $params
+     * @return mixed request response
+     */
+    private function post($endpoint, $params) {
+        return $this->api_request('post', $endpoint, $params);
+    }
+    /**
+     * API request with put method
+     *
+     * @param string $endpoint
+     * @param array $params
+     * @return mixed request response
+     */
+    private function put($endpoint, $params) {
+        return $this->api_request('put', $endpoint, $params);
+    }
 
-			return $response;
+    /**
+     * API request to get access token
+     *
+     * @return mixed requested token or response
+     * @throws Exception
+     */
+    private function request_access_token() {
 
-		} else {
-			self::log(
-				'API Error: ' . var_export(
-					[
-						'response' => $response,
-						'http_code' => $http_code
-					],
-					true
-				),
-				'error'
-			);
+        $retrievedtime = time();
 
-			if ($this->error_return) {
-				return $response;
-			}
-		}
+        if (!empty($this->clientid) && !empty($this->clientsecret)) {
+            $response = $this->post('o/token/', [
+                'grant_type' => 'client_credentials',
+                'scope' => 'rw:profile rw:issuer rw:backpack',
+                'client_id' => $this->clientid,
+                'client_secret' => $this->clientsecret,
+            ]);
+        } else if (!empty($this->username) && !empty($this->password)) {
+            $response = $this->post('o/token/', [
+                'grant_type' => 'password',
+                'scope' => 'rw:profile rw:issuer rw:backpack',
+                'client_id' => 'public',
+                'username' => $this->username,
+                'password' => $this->password,
+            ]);
+        } else {
+            throw new \Exception('No API credentials given');
+        }
 
-		return false;
-	}
-	private function get($endpoint, $params) {
-		return $this->api_request('get', $endpoint, $params);
-	}
-	private function post($endpoint, $params) {
-		return $this->api_request('post', $endpoint, $params);
-	}
-	private function put($endpoint, $params) {
-		return $this->api_request('put', $endpoint, $params);
-	}
+        if (!empty($response)) {
+            if (empty($response['error'])) {
+                $token = [
+                    'access_token' => $response['access_token'],
+                    'token_expires' => $response['expires_in'],
+                    'token_retrieved' => $retrievedtime,
+                ];
 
-	private function request_access_token() {
+                call_user_func($this->storetoken, $token, $this);
 
-		$retrieved_time = time();
+                return $token;
+            } else if ($this->errorreturn) {
+                return $response;
+            }
+        }
+    }
 
-		if (!empty($this->client_id) && !empty($this->client_secret)) {
-			$response = $this->post('o/token/', [
-				'grant_type' => 'client_credentials',
-				'scope' => 'rw:profile rw:issuer rw:backpack',
-				'client_id' => $this->client_id,
-				'client_secret' => $this->client_secret,
-			]);
-		} else if (!empty($this->username) && !empty($this->password)) {
-			$response = $this->post('o/token/', [
-				'grant_type' => 'password',
-				'scope' => 'rw:profile rw:issuer rw:backpack',
-				'client_id' => 'public',
-				'username' => $this->username,
-				'password' => $this->password,
-			]);
-		} else {
-			throw new \Exception('No API credentials given');
-		}
+    /**
+     * API request to get all badges
+     *
+     * @return mixed request response
+     */
+    public function get_all_badges() {
+        $response = $this->get("v1/issuer/all-badges", []);
+        return $response;
+    }
 
-		if (!empty($response)) {
-			if (empty($response['error'])) {
-				$token = array(
-					'access_token' => $response['access_token'],
-					'token_expires' => $response['expires_in'],
-					'token_retrieved' => $retrieved_time,
-				);
+    /**
+     * API request to get all issuers
+     *
+     * @return mixed request response
+     */
+    public function get_issuers() {
+        $response = $this->get("v1/issuer/issuers", []);
+        return $response;
+    }
 
-				call_user_func($this->store_token, $token, $this);
+    /**
+     * API request to get all badges of this issuer
+     *
+     * @param string $issuer
+     * @return mixed request response
+     */
+    public function get_badges($issuer) {
+        $response = $this->get("v1/issuer/issuers/$issuer/badges", []);
+        return $response;
+    }
 
-				return $token;
-			} else if ($this->error_return) {
-				return $response;
-			}
-		}
-	}
+    /**
+     * API request to issue the badge from this issuer to the recipient
+     *
+     * @param string $issuer
+     * @param string $badge
+     * @param string $recipient
+     * @return mixed request response
+     */
+    public function issue_badge($issuer, $badge, $recipient) {
 
-	public function get_all_badges() {
-		$response = $this->get("v1/issuer/all-badges", []);
-		return $response;
-	}
+        $response = $this->post("v1/issuer/issuers/$issuer/badges/$badge/assertions", [
+            "badge_class" => $badge,
+            "create_notification" => true,
+            "evidence_items" => [],
+            "issuer" => $issuer,
+            "narrative" => "",
+            "recipient_identifier" => $recipient,
+            "recipient_type" => "email",
+        ]);
 
-	public function get_issuers() {
-		$response = $this->get("v1/issuer/issuers", []);
-		return $response;
-	}
+        return $response;
+    }
 
-	public function get_badges($issuer) {
-		$response = $this->get("v1/issuer/issuers/$issuer/badges", []);
-		return $response;
-	}
+    /**
+     * API request to get assertions of this issuer
+     *
+     * @param string $issuer
+     * @return mixed request response
+     */
+    public function get_assertions($issuer) {
+        $response = $this->get("v1/issuer/issuers/$issuer/assertions", []);
+        return $response;
+    }
 
-	public function issue_badge($issuer, $badge, $recipient) {
+    /**
+     * Get client id
+     *
+     * @return string client id
+     */
+    public function get_client_id() {
+        return $this->clientid;
+    }
 
-		$response = $this->post("v1/issuer/issuers/$issuer/badges/$badge/assertions", [
-			"badge_class" => $badge,
-			"create_notification" => true,
-			"evidence_items" => [],
-			"issuer" => $issuer,
-			"narrative" => "",
-			"recipient_identifier" => $recipient,
-			"recipient_type" => "email"
-		]);
-
-		return $response;
-	}
-
-	public function get_assertions($issuer) {
-		$response = $this->get("v1/issuer/issuers/$issuer/assertions", []);
-		return $response;
-	}
-
-	public function get_client_id() {
-		return $this->client_id;
-	}
-
-	public function set_error_return($error_return) {
-		$this->error_return = $error_return;
-	}
+    /**
+     * Sets if errors should be returned
+     *
+     * @param bool $errorreturn New setting
+     */
+    public function set_error_return($errorreturn) {
+        $this->errorreturn = $errorreturn;
+    }
 }

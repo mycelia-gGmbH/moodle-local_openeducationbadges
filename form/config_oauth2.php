@@ -12,13 +12,13 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <https://www.gnu.org/licenses/gpl-3.0>.
+// along with Moodle. If not, see <https://www.gnu.org/licenses/>.
 
 /**
  * Config form for OAuth2 API authentication.
  *
  * @package    local_openeducationbadges
- * @copyright  2024, esirion
+ * @copyright  2024 Esirion AG
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,75 +32,87 @@ require_once('classes/client.php');
 /**
  * Plugin config / Authentication form.
  *
- * @copyright  2024, esirion
+ * @package    local_openeducationbadges
+ * @copyright  2024 Esirion AG
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class oeb_config_oauth2_form extends moodleform {
+    /** @var string JSON with the token information */
+    private $token = null;
 
-	private $token = null;
+    /**
+     * Add elements to form.
+     */
+    public function definition() {
 
-	public function __construct($actionurl) {
-		parent::__construct($actionurl);
-	}
+        $mform = $this->_form;
 
-	public function definition() {
+        // Add header for the client block.
+        $mform->addElement('header', 'oebclientheader', get_string('client', 'local_openeducationbadges'));
 
-		$mform = $this->_form;
+        // Add fields for client.
+        $mform->addElement('text', 'client_name', get_string('clientname', 'local_openeducationbadges'), ['size' => 60]);
+        $mform->setType('client_name', PARAM_NOTAGS);
+        $mform->addRule('client_name', null, 'required');
 
-		// Add header for the client block.
-		$mform->addElement('header', 'oebclientheader', get_string('client', 'local_openeducationbadges'));
+        $mform->addElement('text', 'client_id', get_string('clientid', 'local_openeducationbadges'), ['size' => 60]);
+        $mform->setType('client_id', PARAM_NOTAGS);
+        $mform->addRule('client_id', null, 'required');
+        $mform->addHelpButton('client_id', 'clientid', 'local_openeducationbadges');
 
-		// Add fields for client.
-		$mform->addElement('text', 'client_name', get_string('clientname', 'local_openeducationbadges'), array('size' => 60));
-		$mform->setType('client_name', PARAM_NOTAGS);
-		$mform->addRule('client_name', null, 'required');
+        $mform->addElement('text', 'client_secret', get_string('clientsecret', 'local_openeducationbadges'), ['size' => 60]);
+        $mform->setType('client_secret', PARAM_NOTAGS);
+        $mform->addRule('client_secret', null, 'required');
+        $mform->addHelpButton('client_secret', 'clientsecret', 'local_openeducationbadges');
 
-		$mform->addElement('text', 'client_id', get_string('clientid', 'local_openeducationbadges'), array('size' => 60));
-		$mform->setType('client_id', PARAM_NOTAGS);
-		$mform->addRule('client_id', null, 'required');
-		$mform->addHelpButton('client_id', 'clientid', 'local_openeducationbadges');
+        $submitlabel = null; // Default.
+        $this->add_action_buttons(true, $submitlabel);
+    }
 
-		$mform->addElement('text', 'client_secret', get_string('clientsecret', 'local_openeducationbadges'), array('size' => 60));
-		$mform->setType('client_secret', PARAM_NOTAGS);
-		$mform->addRule('client_secret', null, 'required');
-		$mform->addHelpButton('client_secret', 'clientsecret', 'local_openeducationbadges');
+    /**
+     * Validate submitted data
+     *
+     * @param array $data Array of submitted data
+     * @param array $files Array of uploaded files
+     * @return array errors
+     */
+    public function validation($data, $files) {
+        global $DB;
 
-		$submitlabel = null; // Default.
-		$this->add_action_buttons(true, $submitlabel);
-	}
+        $errors = parent::validation($data, $files);
 
-	public function validation($data, $files) {
-		global $DB;
+        if (empty($errors)) {
+            try {
+                $client = openeducation_client::get_instance();
+                $token = $client->test_connection($data['client_id'], $data['client_secret']);
 
-		$errors = parent::validation($data, $files);
+                if (empty($token)) {
+                    $errors['client_id'] = get_string('invalidclientsecret', 'local_openeducationbadges');
+                    $errors['client_secret'] = get_string('invalidclientsecret', 'local_openeducationbadges');
+                } else {
+                    $this->token = json_encode($token);
+                }
+            } catch (Exception $e) {
+                $errors['client_id'] = get_string('invalidclientsecret', 'local_openeducationbadges');
+                $errors['client_secret'] = get_string('invalidclientsecret', 'local_openeducationbadges');
+            }
+        }
 
-		if (empty($errors)) {
-			try {
-				$client = openeducation_client::get_instance();
-				$token = $client->test_connection($data['client_id'], $data['client_secret']);
+        return $errors;
+    }
 
-				if (empty($token)) {
-					$errors['client_id'] = get_string('invalidclientsecret', 'local_openeducationbadges');
-					$errors['client_secret'] = get_string('invalidclientsecret', 'local_openeducationbadges');
-				} else {
-					$this->token = json_encode($token);
-				}
-			} catch (Exception $e) {
-				$errors['client_id'] = get_string('invalidclientsecret', 'local_openeducationbadges');
-				$errors['client_secret'] = get_string('invalidclientsecret', 'local_openeducationbadges');
-			}
-		}
+    /**
+     * Return submitted data or NULL
+     *
+     * @return stdClass|null
+     */
+    public function get_data() {
+        $data = parent::get_data();
 
-		return $errors;
-	}
+        if ($data) {
+            $data->access_token = $this->token;
+        }
 
-	public function get_data() {
-		$data = parent::get_data();
-
-		if ($data) {
-			$data->access_token = $this->token;
-		}
-
-		return $data;
-	}
+        return $data;
+    }
 }
