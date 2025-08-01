@@ -24,6 +24,10 @@
 
 namespace Esirion\OpenEducationBadges;
 
+use local_openeducationbadges\event\apirequest_called;
+use local_openeducationbadges\event\apirequest_answered;
+use local_openeducationbadges\event\apirequest_failed;
+
 /**
  * Class for Open Education Badges API Interface.
  *
@@ -84,13 +88,28 @@ class OpenEducationBadgesApi {
     }
 
     /**
-     * Logs a message with a specific level
+     * Logs a message with a specific event type
      *
      * @param string $msg Message to log
-     * @param string $level log level
+     * @param string $type event type
      */
-    public static function log($msg, $level = 'error') {
-        // TODO Write logging function.
+    public static function log($msg, $type = 'failed') {
+        global $CFG;
+
+        $eventdata = [];
+        $eventdata['other'] = [];
+        $eventdata['other']['info'] = $msg;
+
+        if ($type == 'called' && $CFG->debug >= DEBUG_ALL) {
+            $event = apirequest_called::create($eventdata);
+            $event->trigger();
+        } else if ($type == 'answered' && $CFG->debug >= DEBUG_ALL) {
+            $event = apirequest_answered::create($eventdata);
+            $event->trigger();
+        } else if ($type == 'failed' && $CFG->debug >= DEBUG_MINIMAL) {
+            $event = apirequest_failed::create($eventdata);
+            $event->trigger();
+        }
     }
 
     /**
@@ -216,25 +235,19 @@ class OpenEducationBadgesApi {
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
         self::log(
-            'Request: ' . var_export(
-                [
-                    'url' => $url,
-                    'payload' => $payload,
-                    'headers' => $headers,
-                ],
-                true
-            ),
-            'info'
+            json_encode([
+                'url' => $url,
+                'payload' => $payload,
+                'headers' => $headers,
+            ]),
+            'called'
         );
 
         $response = curl_exec($ch);
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
-        self::log('Response: ' . var_export(
-            $response,
-            'info'
-        ));
+        self::log($response, 'answered');
 
         // Decode response available.
         if (!empty($response)) {
@@ -247,14 +260,11 @@ class OpenEducationBadgesApi {
 
         } else {
             self::log(
-                'API Error: ' . var_export(
-                    [
-                        'response' => $response,
-                        'httpcode' => $httpcode,
-                    ],
-                    true
-                ),
-                'error'
+                json_encode([
+                    'response' => $response,
+                    'httpcode' => $httpcode,
+                ]),
+                'failed'
             );
 
             if ($this->errorreturn) {

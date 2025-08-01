@@ -73,4 +73,11 @@ $string['clientsecret_help'] = 'Log in to your openbadges.education account and 
 $string['connectionproblembody'] = 'The connection {$a->name} to Open Education Badges has a problem. Please verify your plugin credentials, the availability of the OEB Server or the like and save the connection again.';
 $string['connectionproblemsubject'] = 'The connection {$a->name} has a problem.';
 
+$string['event:apirequest_answered'] = 'OEB API response';
+$string['event:apirequest_answered:info'] = 'Response: {$a->info}';
+$string['event:apirequest_called'] = 'OEB API request';
+$string['event:apirequest_called:info'] = 'Request: {$a->info}';
+$string['event:apirequest_failed'] = 'OEB API error';
+$string['event:apirequest_failed:info'] = 'API Error: {$a->info}';
+
 $string['privacy:metadata'] = 'This plugin only uses the already available user information stored in the moodle core system.';
