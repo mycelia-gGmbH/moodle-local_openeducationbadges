@@ -15,17 +15,23 @@
 // along with Moodle. If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Version information. See https://docs.moodle.org/dev/version.php for more info.
+ * Task schedule configuration for the local_openeducationbadges plugin.
  *
- * @package    local_openeducationbadges
- * @copyright  2024 Esirion AG
- * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   local_openeducationbadges
+ * @copyright 2024 Esirion AG
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2025080500;
-$plugin->requires = 2022112800; // Moodle 4.1 version check.
-$plugin->component = 'local_openeducationbadges';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.1.0';
+$tasks = [
+    [
+        'classname' => 'local_openeducationbadges\task\issue_badges',
+        'blocking' => 0,
+        'minute' => 'R',
+        'hour' => '*',
+        'day' => '*',
+        'month' => '*',
+        'dayofweek' => '*',
+    ],
+];

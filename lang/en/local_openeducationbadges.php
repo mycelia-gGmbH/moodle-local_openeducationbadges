@@ -50,6 +50,7 @@ $string['deleteclientconfirm'] = 'Are you sure you want to delete this client?';
 $string['editissuers'] = 'Edit issuers';
 $string['infoconnectapi'] = 'Add API authentication method.';
 $string['invalidclientsecret'] = 'The client ID or secret is invalid';
+$string['issuebadgefailed'] = 'Badge issuing failed';
 $string['issuers'] = 'Issuers';
 $string['issuerscustomize'] = 'Customize issuers';
 $string['issuerssaved'] = 'Issuers customized';
@@ -81,3 +82,6 @@ $string['event:apirequest_failed'] = 'OEB API error';
 $string['event:apirequest_failed:info'] = 'API Error: {$a->info}';
 
 $string['privacy:metadata'] = 'This plugin only uses the already available user information stored in the moodle core system.';
+
+$string['task:issue_badge'] = 'Try issuing badge in queue';
+$string['task:issue_badges'] = 'Try issuing badges in queue';

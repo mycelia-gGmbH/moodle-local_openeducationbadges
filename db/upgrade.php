@@ -66,5 +66,20 @@ function xmldb_local_openeducationbadges_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2025050500, 'local', 'openeducationbadges');
     }
 
+    if ($oldversion < 2025080500) {
+        $queuetable = new xmldb_table('local_oeb_badge_queue');
+        $queuetable->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
+        $queuetable->add_field('badgeid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
+        $queuetable->add_field('user_id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, null);
+
+        $queuetable->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        if (!$dbman->table_exists($queuetable)) {
+            $dbman->create_table($queuetable);
+        }
+
+        upgrade_plugin_savepoint(true, 2025080500, 'local', 'openeducationbadges');
+    }
+
     return true;
 }

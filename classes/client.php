@@ -190,13 +190,16 @@ class openeducation_client {
     }
 
     /**
-     * Issues badges to user
+     * Issue badge to user
      *
-     * @param stdClass $user The recipient of the badges.
-     * @param string[] $badgeids The badge ids of the badges to be issued.
+     * @param int $userid The id of the recipient of the badge.
+     * @param int $badgeid The badge id of the badge to be issued.
+     * @throws moodle_exception
      */
-    public function issue_badges($user, $badgeids) {
+    public function issue_badge($userid, $badgeid) {
         global $DB;
+
+        $user = $DB->get_record('user', ['id' => $userid]);
 
         foreach ($this->apis as $clientid => $api) {
             $issuerrecords = $DB->get_records(
@@ -221,11 +224,13 @@ class openeducation_client {
             }
 
             foreach ($allbadges as $badge) {
-                $badgeid = strval($badge['id']);
-                if (in_array($badgeid, $badgeids)) {
+                if ($badgeid == $badge['id']) {
                     $issuer = preg_replace('(.*\/)', '', $badge['issuer']);
-                    $badgeid = $badge['slug'];
-                    $api->issue_badge($issuer, $badgeid, $user->email);
+                    $res = $api->issue_badge($issuer, $badge['slug'], $user->email);
+
+                    if (empty($res) || !empty($res['error'])) {
+                        throw new moodle_exception(get_string('issuebadgefailed', 'local_openeducationbadges'));
+                    }
                 }
             }
         }

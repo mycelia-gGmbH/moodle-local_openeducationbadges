@@ -24,6 +24,7 @@
 
 use classes\openeducation_badge;
 use classes\openeducation_client;
+use local_openeducationbadges\task\issue_badge;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -60,8 +61,6 @@ class local_openeducationbadges_observer {
     private static function course_user_completion_award(stdClass $eventdata) {
         global $DB;
 
-        $user = $DB->get_record('user', ['id' => $eventdata->userid]);
-
         $records = $DB->get_records(
             'local_oeb_course_badge',
             [
@@ -71,17 +70,10 @@ class local_openeducationbadges_observer {
             '',
             'badgeid'
         );
-        $badgeids = [];
-        foreach ($records as $record) {
-            $badgeids[] = $record->badgeid;
-        }
 
-        try {
-            $client = openeducation_client::get_instance();
-            $client->issue_badges($user, $badgeids);
-        } catch (Exception $e) {
-            // TODO remember and try issuing later again.
-            // In the mean time do not disturb user.
+        foreach ($records as $record) {
+            $task = issue_badge::instance($eventdata->userid, $record->badgeid);
+            \core\task\manager::queue_adhoc_task($task);
         }
     }
 
@@ -111,8 +103,6 @@ class local_openeducationbadges_observer {
     private static function course_module_user_completion_award(stdClass $eventdata) {
         global $DB;
 
-        $user = $DB->get_record('user', ['id' => $eventdata->userid]);
-
         $records = $DB->get_records(
             'local_oeb_course_badge',
             [
@@ -123,17 +113,10 @@ class local_openeducationbadges_observer {
             '',
             'badgeid'
         );
-        $badgeids = [];
-        foreach ($records as $record) {
-            $badgeids[] = $record->badgeid;
-        }
 
-        try {
-            $client = openeducation_client::get_instance();
-            $client->issue_badges($user, $badgeids);
-        } catch (Exception $e) {
-            // TODO remember and try issuing later again.
-            // In the mean time do not disturb user.
+        foreach ($records as $record) {
+            $task = issue_badge::instance($eventdata->userid, $record->badgeid);
+            \core\task\manager::queue_adhoc_task($task);
         }
     }
 }

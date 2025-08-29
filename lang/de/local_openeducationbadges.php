@@ -50,6 +50,7 @@ $string['deleteclientconfirm'] = 'Sind Sie sicher, dass Sie diese Verbindung ent
 $string['editissuers'] = 'Institutionen anpassen';
 $string['infoconnectapi'] = 'Füge eine API Authentifizierungsmethode hinzu.';
 $string['invalidclientsecret'] = 'Die Client ID oder das Secret sind ungültig';
+$string['issuebadgefailed'] = 'Badge Vergabe fehlgeschlagen';
 $string['issuers'] = 'Institutionen';
 $string['issuerscustomize'] = 'Institutionen anpassen';
 $string['issuerssaved'] = 'Institutionen angepasst';
@@ -81,3 +82,6 @@ $string['event:apirequest_failed'] = 'OEB API Fehler';
 $string['event:apirequest_failed:info'] = 'API Fehler: {$a->info}';
 
 $string['privacy:metadata'] = 'Dieses Plugin nutzt nur die bereits im Moodle Core System gespeicherten User Informationen.';
+
+$string['task:issue_badge'] = 'Versuch Badge in der Warteschlange zu vergeben';
+$string['task:issue_badges'] = 'Versuch Badges in der Warteschlange zu vergeben';

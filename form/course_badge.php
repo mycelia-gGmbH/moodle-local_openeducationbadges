@@ -103,7 +103,7 @@ class oeb_course_badge_form extends moodleform {
         $cms = $modinfo->get_cms();
 
         foreach ($cms as $cm) {
-            if ($cm->completion) {
+            if ($cm->uservisible && $cm->completion) {
                 $activities[$cm->id] = $cm->get_formatted_name();
             }
         }
