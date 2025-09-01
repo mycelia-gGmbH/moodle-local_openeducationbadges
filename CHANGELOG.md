@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Privacy API is missing external location link [#3](https://github.com/mycelia-gGmbH/moodle-local_openeducationbadges/issues/3)
 - Missing language string for message provider [#6](https://github.com/mycelia-gGmbH/moodle-local_openeducationbadges/issues/6)
 - Not needed JS file [#2](https://github.com/mycelia-gGmbH/moodle-local_openeducationbadges/issues/2)
 

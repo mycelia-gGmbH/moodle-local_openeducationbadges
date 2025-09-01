@@ -83,7 +83,13 @@ $string['event:apirequest_failed:info'] = 'API Error: {$a->info}';
 
 $string['messageprovider:connectionproblem'] = 'A connection problem has occured.';
 
-$string['privacy:metadata'] = 'This plugin only uses the already available user information stored in the moodle core system.';
+$string['privacy:metadata:badge_queue'] = 'Information about pending badges to be issued.';
+$string['privacy:metadata:badge_queue:badgeid'] = 'The ID of the badge to be issued.';
+$string['privacy:metadata:badge_queue:id'] = 'The ID of the record in the database.';
+$string['privacy:metadata:badge_queue:user_id'] = 'The ID of the user the badge should be issued to.';
+$string['privacy:metadata:oeb_client'] = 'In order to integrate with the remote openbadges.education service, user data needs to be exchanged with that service.';
+$string['privacy:metadata:oeb_client:datarights'] = 'Your data protection rights and how to exercise them: <a href="https://openbadges.education/page/data-privacy" target="_blank">https://openbadges.education/page/data-privacy</a>';
+$string['privacy:metadata:oeb_client:useremail'] = 'The user email is sent from Moodle to allow issuing badges to you and to allow you to access your badges on the remote system.';
 
 $string['task:issue_badge'] = 'Try issuing badge in queue';
 $string['task:issue_badges'] = 'Try issuing badges in queue';
