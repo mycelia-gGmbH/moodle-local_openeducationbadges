@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.1] - 2025-09-01
+
+### Fixed
+
+- Not needed JS file [#2](#2)
+
 ## [1.1.0] - 2025-08-18
 
 ### Changed
