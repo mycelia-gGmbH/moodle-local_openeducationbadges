@@ -81,6 +81,8 @@ $string['event:apirequest_called:info'] = 'Request: {$a->info}';
 $string['event:apirequest_failed'] = 'OEB API error';
 $string['event:apirequest_failed:info'] = 'API Error: {$a->info}';
 
+$string['messageprovider:connectionproblem'] = 'A connection problem has occured.';
+
 $string['privacy:metadata'] = 'This plugin only uses the already available user information stored in the moodle core system.';
 
 $string['task:issue_badge'] = 'Try issuing badge in queue';

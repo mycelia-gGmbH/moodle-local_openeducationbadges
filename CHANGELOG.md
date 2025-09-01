@@ -6,7 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- Not needed JS file [#2](#2)
+- Missing language string for message provider [#6](https://github.com/mycelia-gGmbH/moodle-local_openeducationbadges/issues/6)
+- Not needed JS file [#2](https://github.com/mycelia-gGmbH/moodle-local_openeducationbadges/issues/2)
 
 ## [1.1.0] - 2025-08-18
 
