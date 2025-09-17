@@ -27,92 +27,93 @@ along with Moodle. If not, see <https://www.gnu.org/licenses/gpl-3.0>.
  * Badge list
  */
 .path-local-openeducationbadges ul.badgelist {
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	display: grid;
-	gap: 24px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 24px;
 }
 .path-local-openeducationbadges ul.badgelist .openeducation-badge-card {
-	border: 1px solid #d9d9d9;
-	border-radius: 3px;
-	padding: 16px;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
+    border: 1px solid #d9d9d9;
+    border-radius: 3px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 .path-local-openeducationbadges ul.badgelist .openeducation-badge-card-body {
-	display: flex;
-	flex-direction: row;
-	column-gap: 16px;
+    display: flex;
+    flex-direction: row;
+    column-gap: 16px;
 }
 .path-local-openeducationbadges ul.badgelist .openeducation-badge-card-footer {
-	border-top: 1px solid #f2f2f2;
-	padding-top: 16px;
-	margin-top: 16px;
+    border-top: 1px solid #f2f2f2;
+    padding-top: 16px;
+    margin-top: 16px;
 }
 .path-local-openeducationbadges ul.badgelist .openeducation-badge-card .badgeimage {
-	width: 80px;
-	height: 80px;
+    width: 80px;
+    height: 80px;
 }
 .path-local-openeducationbadges ul.badgelist .openeducation-badge-card .badgename {
-	display: block;
-	color: #515dc6;
-	font-weight: 700;
-	font-size: 16px;
-	line-height: 24px;
-	hyphens: auto;
-	word-break: break-word;
-	margin: 0;
+    display: block;
+    color: #515dc6;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 24px;
+    hyphens: auto;
+    word-break: break-word;
+    margin: 0;
 }
 .path-local-openeducationbadges ul.badgelist .openeducation-badge-card .badgeissuer {
-	color: #191919;
-	font-weight: 700;
-	font-size: 12px;
-	line-height: 16px;
-	hyphens: auto;
-	word-break: break-word;
-	margin: 4px 0 0;
+    color: #191919;
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 16px;
+    hyphens: auto;
+    word-break: break-word;
+    margin: 4px 0 0;
 }
 .path-local-openeducationbadges ul.badgelist .openeducation-badge-card .badgedesc {
-	color: #666;
-	font-size: 12px;
-	line-height: 16px;
-	margin: 8px 0 0;
+    color: #666;
+    font-size: 12px;
+    line-height: 16px;
+    margin: 8px 0 0;
 }
+
 @media (min-width: 768px) {
-	.path-local-openeducationbadges ul.badgelist {
-		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-	}
+    .path-local-openeducationbadges ul.badgelist {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
 }
 
 /* Settings Clients-Table */
 .path-local-openeducationbadges .oeb-clients-table {
-	width: 100%;
-	margin-bottom: 12px;
+    width: 100%;
+    margin-bottom: 12px;
 }
 .path-local-openeducationbadges .oeb-clients-table tr {
-	border-top: 1px solid #dee2e6;
+    border-top: 1px solid #dee2e6;
 }
 .path-local-openeducationbadges .oeb-clients-table th,
 .path-local-openeducationbadges .oeb-clients-table td {
-	padding: 12px;
-	vertical-align: top;
+    padding: 12px;
+    vertical-align: top;
 }
 
 .path-local-openeducationbadges .oeb-actions {
-	text-align: right;
+    text-align: right;
 }
 
 /* Course Badge Awarding */
 .path-local-openeducationbadges ul.badgelist .openeducation-badge-card-footer form .form-group {
-	flex-flow: row-reverse;
+    flex-flow: row-reverse;
 }
-.path-local-openeducationbadges ul.badgelist .openeducation-badge-card-footer form .activitylist .fitem:not(:last-child) {
-	margin-bottom: 0 !important;
+.path-local-openeducationbadges ul.badgelist .openeducation-badge-card-footer form .activitylist .fitem:not(:first-child) {
+    margin-top: -1rem;
 }
 
 /* Profile */
 .userprofile .profile_tree .path-local-openeducationbadges ul.badgelist {
-	gap: 8px;
+    gap: 8px;
 }

@@ -22,11 +22,10 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use classes\openeducation_badge;
-use classes\openeducation_client;
+use local_openeducationbadges\badge;
+use local_openeducationbadges\client;
 
 require(__DIR__ . '/../../config.php');
-require_once(__DIR__ . '/classes/badge.php');
 
 $courseid = optional_param('courseid', null, PARAM_INT);
 $context = empty($courseid) ? context_system::instance() : context_course::instance($courseid);
@@ -49,7 +48,7 @@ $PAGE->set_title(get_string('oeb', 'local_openeducationbadges'));
 $content = '';
 
 try {
-    $client = openeducation_client::get_instance();
+    $client = client::get_instance();
     if ($client->exist_severed_connections()) {
         $content .= $OUTPUT->notification(get_string('connectionproblemgeneral', 'local_openeducationbadges'), 'notifyproblem');
     }
@@ -58,7 +57,7 @@ try {
 }
 
 try {
-    $badges = openeducation_badge::get_badges();
+    $badges = badge::get_badges();
     $content .= $PAGE->get_renderer('local_openeducationbadges')->render_badgelist($badges, $context);
 } catch (Exception $e) {
     $content .= $OUTPUT->notification($e->getMessage(), 'notifyproblem');

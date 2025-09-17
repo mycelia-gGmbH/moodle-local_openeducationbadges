@@ -22,12 +22,11 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use classes\openeducation_client;
+use local_openeducationbadges\client;
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/formslib.php');
-require_once('classes/client.php');
 
 /**
  * Plugin config / Authentication form.
@@ -83,7 +82,7 @@ class oeb_config_oauth2_form extends moodleform {
 
         if (empty($errors)) {
             try {
-                $client = openeducation_client::get_instance();
+                $client = client::get_instance();
                 $token = $client->test_connection($data['client_id'], $data['client_secret']);
 
                 if (empty($token)) {

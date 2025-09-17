@@ -24,11 +24,7 @@
 
 namespace local_openeducationbadges\task;
 
-use classes\openeducation_client;
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once(__DIR__ . '/../client.php');
+use local_openeducationbadges\client;
 
 /**
  * An adhoc task class to issue a badge.
@@ -74,7 +70,7 @@ class issue_badge extends \core\task\adhoc_task {
         $data = $this->get_custom_data();
 
         try {
-            $client = openeducation_client::get_instance();
+            $client = client::get_instance();
             $client->issue_badge($data->userid, $data->badgeid);
         } catch (\Exception $e) {
             $DB->insert_record(

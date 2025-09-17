@@ -22,13 +22,12 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use classes\openeducation_client;
+use local_openeducationbadges\client;
 
 require(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once(__DIR__ . '/form/config_oauth2.php');
 require_once(__DIR__ . '/form/config_issuers.php');
-require_once(__DIR__ . '/classes/client.php');
 
 $context = context_system::instance();
 $action = optional_param('action', 'list', PARAM_TEXT);
@@ -56,7 +55,7 @@ switch ($action) {
 
         if ($clientid) {
             try {
-                $client = openeducation_client::get_instance();
+                $client = client::get_instance();
                 $clientrecord = $client->get_client_data($clientid);
                 if (!$clientrecord->status) {
                     echo $OUTPUT->notification(get_string('connectionsevered', 'local_openeducationbadges'), 'notifyproblem');
@@ -76,7 +75,7 @@ switch ($action) {
         } else if ($data = $mform->get_data()) {
 
             try {
-                $client = openeducation_client::get_instance();
+                $client = client::get_instance();
 
                 if ($isnewrecord) {
                     $client->save_client($data);
@@ -101,7 +100,7 @@ switch ($action) {
         $allissuers = [];
         $issuers = [];
         try {
-            $client = openeducation_client::get_instance();
+            $client = client::get_instance();
             $clientrecord = $client->get_client_data($clientid);
             if (!$clientrecord->status) {
                 echo $OUTPUT->notification(get_string('connectionsevered', 'local_openeducationbadges'), 'notifyproblem');
@@ -132,7 +131,7 @@ switch ($action) {
             array_splice($dataarr, $index, 1);
 
             try {
-                $client = openeducation_client::get_instance();
+                $client = client::get_instance();
                 $client->save_issuers( $clientid, $dataarr);
             } catch (Exception $e) {
                 echo $OUTPUT->notification(get_string('connectionproblemgeneral', 'local_openeducationbadges'), 'notifyproblem');
@@ -167,7 +166,7 @@ switch ($action) {
         ];
 
         try {
-            $client = openeducation_client::get_instance();
+            $client = client::get_instance();
             $clientrecords = $DB->get_records('local_oeb_oauth2');
         } catch (Exception $e) {
             echo $OUTPUT->notification(get_string('connectionproblemgeneral', 'local_openeducationbadges'), 'notifyproblem');

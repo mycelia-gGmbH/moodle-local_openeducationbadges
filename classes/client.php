@@ -22,7 +22,7 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace classes;
+namespace local_openeducationbadges;
 
 use Esirion\OpenEducationBadges\OpenEducationBadgesApi;
 
@@ -41,8 +41,8 @@ require_once(__DIR__ . '/Esirion/OpenEducationBadges/OpenEducationBadgesApi.php'
  * @copyright  2024 Esirion AG
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class openeducation_client {
-    /** @var $client Static openeducation_client singleton */
+class client {
+    /** @var $client Static client singleton */
     private static $client = null;
 
     /** @var array The API connections. */
@@ -51,7 +51,7 @@ class openeducation_client {
     /**
      * Returns the client instance.
      *
-     * @return openeducation_client The client.
+     * @return client The client.
      */
     public static function get_instance() {
         global $DB;
@@ -135,7 +135,7 @@ class openeducation_client {
     /**
      * Get all the badges from the API for all configured clients.
      *
-     * @param stdClass $user
+     * @param \stdClass $user
      * @return array The badges data.
      */
     public function get_badges_earned_all($user) {

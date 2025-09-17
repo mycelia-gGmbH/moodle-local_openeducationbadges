@@ -105,7 +105,7 @@ function local_openeducationbadges_myprofile_navigation(\core_user\output\myprof
     );
     $tree->add_category($category);
 
-    addopeneducationbadges($tree, $user);
+    local_openeducationbadges_addbadges_profile($tree, $user);
 }
 
 /**
@@ -114,7 +114,7 @@ function local_openeducationbadges_myprofile_navigation(\core_user\output\myprof
  * @param \core_user\output\myprofile\tree $tree
  * @param stdClass $user
  */
-function addopeneducationbadges($tree, $user): void {
+function local_openeducationbadges_addbadges_profile($tree, $user): void {
     global $PAGE, $DB;
 
     $category = new core_user\output\myprofile\category(

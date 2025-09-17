@@ -22,11 +22,10 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use classes\openeducation_badge;
+use local_openeducationbadges\badge;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__ . '/classes/badge.php');
 require_once(__DIR__ . '/form/course_badge.php');
 
 /**
@@ -41,7 +40,7 @@ class local_openeducationbadges_renderer extends plugin_renderer_base {
     /**
      * Renders the list of badges.
      *
-     * @param openeducation_badge[] $badges
+     * @param badge[] $badges
      * @param context $context
      * @return string
      */
@@ -55,7 +54,7 @@ class local_openeducationbadges_renderer extends plugin_renderer_base {
     /**
      * Renders the Open Education Badges.
      *
-     * @param openeducation_badge[] $badges
+     * @param badge[] $badges
      * @param context $context
      * @return string HTML
      */
@@ -94,10 +93,10 @@ class local_openeducationbadges_renderer extends plugin_renderer_base {
     /**
      * Generates the HTML for the badge image.
      *
-     * @param openeducation_badge $badge The badge object
+     * @param badge $badge The badge object
      * @return string The img-tag
      */
-    public function print_badge_image(openeducation_badge $badge) {
+    public function print_badge_image(badge $badge) {
         $params = [
             "src" => $badge->get_image(),
             "alt" => s($badge->get_name()),
@@ -110,11 +109,11 @@ class local_openeducationbadges_renderer extends plugin_renderer_base {
     /**
      * Generates the HTML for the badge card.
      *
-     * @param openeducation_badge $badge The badge object
+     * @param badge $badge The badge object
      * @param context $context
      * @return string The card html
      */
-    public function print_badge_card(openeducation_badge $badge, context $context) {
+    public function print_badge_card(badge $badge, context $context) {
         $badgeimage = $this->print_badge_image($badge);
 
         $badgename = html_writer::link(
@@ -149,11 +148,11 @@ class local_openeducationbadges_renderer extends plugin_renderer_base {
     /**
      * Generates the HTML for the badge card footer.
      *
-     * @param openeducation_badge $badge The badge object
+     * @param badge $badge The badge object
      * @param context $context
      * @return string The card footer html
      */
-    public function print_badge_card_footer(openeducation_badge $badge, context $context) {
+    public function print_badge_card_footer(badge $badge, context $context) {
         global $DB;
 
         $cardfooter = '';
@@ -171,7 +170,7 @@ class local_openeducationbadges_renderer extends plugin_renderer_base {
                 [
                     'courseid' => $courseid,
                     'badgeid' => $badgeid,
-                    'completion_method' => openeducation_badge::COMPLETION_TYPE_COURSE,
+                    'completion_method' => badge::COMPLETION_TYPE_COURSE,
                 ],
                 '*',
             );
@@ -181,7 +180,7 @@ class local_openeducationbadges_renderer extends plugin_renderer_base {
                 [
                     'courseid' => $courseid,
                     'badgeid' => $badgeid,
-                    'completion_method' => openeducation_badge::COMPLETION_TYPE_ACTIVITY,
+                    'completion_method' => badge::COMPLETION_TYPE_ACTIVITY,
                 ],
                 '',
                 'activityid,id'
@@ -208,7 +207,7 @@ class local_openeducationbadges_renderer extends plugin_renderer_base {
                         $coursecompletionrecord = new stdClass;
                         $coursecompletionrecord->courseid = $courseid;
                         $coursecompletionrecord->badgeid = $badgeid;
-                        $coursecompletionrecord->completion_method = openeducation_badge::COMPLETION_TYPE_COURSE;
+                        $coursecompletionrecord->completion_method = badge::COMPLETION_TYPE_COURSE;
                         $coursecompletionrecord->activityid = 0;
                         $DB->insert_record('local_oeb_course_badge', $coursecompletionrecord);
                     }
@@ -222,7 +221,7 @@ class local_openeducationbadges_renderer extends plugin_renderer_base {
                             $activitycompletionrecord = new stdClass;
                             $activitycompletionrecord->courseid = $courseid;
                             $activitycompletionrecord->badgeid = $badgeid;
-                            $activitycompletionrecord->completion_method = openeducation_badge::COMPLETION_TYPE_ACTIVITY;
+                            $activitycompletionrecord->completion_method = badge::COMPLETION_TYPE_ACTIVITY;
                             $activitycompletionrecord->activityid = $activityid;
                             $DB->insert_record('local_oeb_course_badge', $activitycompletionrecord);
                         };
@@ -251,7 +250,7 @@ class local_openeducationbadges_renderer extends plugin_renderer_base {
     public function render_user_assertions($user) {
         global $DB;
 
-        $badges = openeducation_badge::get_earned_badges($user);
+        $badges = badge::get_earned_badges($user);
 
         if (count($badges) === 0) {
             $output = get_string('nobadgesearned', 'local_openeducationbadges');

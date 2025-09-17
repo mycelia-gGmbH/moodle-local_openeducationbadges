@@ -22,7 +22,7 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use classes\openeducation_badge;
+use local_openeducationbadges\badge;
 
 defined('MOODLE_INTERNAL') || die();
 

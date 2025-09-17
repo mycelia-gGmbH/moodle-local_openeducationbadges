@@ -22,14 +22,10 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use classes\openeducation_badge;
-use classes\openeducation_client;
+namespace local_openeducationbadges;
+
+use local_openeducationbadges\badge;
 use local_openeducationbadges\task\issue_badge;
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once(__DIR__ . '/badge.php');
-require_once(__DIR__ . '/client.php');
 
 /**
  * Class for event observers
@@ -38,7 +34,7 @@ require_once(__DIR__ . '/client.php');
  * @copyright  2024 Esirion AG
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class local_openeducationbadges_observer {
+class observer {
 
     /**
      * Course completed observer
@@ -47,7 +43,7 @@ class local_openeducationbadges_observer {
      * @return boolean Returns true if everything went ok.
      */
     public static function course_completed(\core\event\course_completed $event) {
-        $eventdata = new stdClass();
+        $eventdata = new \stdClass();
         $eventdata->userid = $event->relateduserid;
         $eventdata->course = $event->courseid;
         return self::course_user_completion_award($eventdata);
@@ -56,16 +52,16 @@ class local_openeducationbadges_observer {
     /**
      * Issues badges when a course is completed.
      *
-     * @param stdClass $eventdata
+     * @param \stdClass $eventdata
      */
-    private static function course_user_completion_award(stdClass $eventdata) {
+    private static function course_user_completion_award(\stdClass $eventdata) {
         global $DB;
 
         $records = $DB->get_records(
             'local_oeb_course_badge',
             [
                 'courseid' => $eventdata->course,
-                'completion_method' => openeducation_badge::COMPLETION_TYPE_COURSE,
+                'completion_method' => badge::COMPLETION_TYPE_COURSE,
             ],
             '',
             'badgeid'
@@ -85,9 +81,9 @@ class local_openeducationbadges_observer {
      */
     public static function course_module_completed(\core\event\course_module_completion_updated $event) {
         $recordsnapshot = $event->get_record_snapshot('course_modules_completion', $event->objectid);
-        $context = context_module::instance($recordsnapshot->coursemoduleid);
+        $context = \context_module::instance($recordsnapshot->coursemoduleid);
         if ($context && $context->get_course_context()) {
-            $eventdata = new stdClass();
+            $eventdata = new \stdClass();
             $eventdata->userid = $event->relateduserid;
             $eventdata->course = $event->courseid;
             $eventdata->coursemoduleid = $recordsnapshot->coursemoduleid;
@@ -98,9 +94,9 @@ class local_openeducationbadges_observer {
     /**
      * Issues badges when an activity is completed.
      *
-     * @param stdClass $eventdata
+     * @param \stdClass $eventdata
      */
-    private static function course_module_user_completion_award(stdClass $eventdata) {
+    private static function course_module_user_completion_award(\stdClass $eventdata) {
         global $DB;
 
         $records = $DB->get_records(
@@ -108,7 +104,7 @@ class local_openeducationbadges_observer {
             [
                 'courseid' => $eventdata->course,
                 'activityid' => $eventdata->coursemoduleid,
-                'completion_method' => openeducation_badge::COMPLETION_TYPE_ACTIVITY,
+                'completion_method' => badge::COMPLETION_TYPE_ACTIVITY,
             ],
             '',
             'badgeid'

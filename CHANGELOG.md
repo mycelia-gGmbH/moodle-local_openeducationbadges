@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.2] - 2025-09-17
+
+### Fixed
+
+- Namespace collisions [#4](https://github.com/mycelia-gGmbH/moodle-local_openeducationbadges/issues/4)
+- stylelint errors
+
 ## [1.1.1] - 2025-09-01
 
 ### Fixed

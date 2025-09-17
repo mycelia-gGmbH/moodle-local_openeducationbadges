@@ -22,15 +22,11 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace classes;
+namespace local_openeducationbadges;
 
-use classes\openeducation_client;
+use local_openeducationbadges\client;
 
 use moodle_exception;
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once(__DIR__ . '/client.php');
 
 /**
  * Class for a Open Education Badge.
@@ -39,7 +35,7 @@ require_once(__DIR__ . '/client.php');
  * @copyright  2024 Esirion AG
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class openeducation_badge {
+class badge {
 
     /**
      * Completion type associated to courses
@@ -167,13 +163,13 @@ class openeducation_badge {
     /**
      * Gets and returns the Open Education badges.
      *
-     * @return openeducation_badge[] The badges.
+     * @return badge[] The badges.
      */
     public static function get_badges() {
         $badges = [];
 
         try {
-            $client = openeducation_client::get_instance();
+            $client = client::get_instance();
             $badgesdata = $client->get_badges_all();
             foreach ($badgesdata as $badgedata) {
                 $badge = self::get_instance_from_array($badgedata);
@@ -191,8 +187,8 @@ class openeducation_badge {
     /**
      * Gets and returns the earned Open Education badges by user.
      *
-     * @param stdClass $user
-     * @return openeducation_badge[] The badges.
+     * @param \stdClass $user
+     * @return badge[] The badges.
      */
     public static function get_earned_badges($user) {
         global $DB;
@@ -200,7 +196,7 @@ class openeducation_badge {
         $badges = [];
 
         try {
-            $client = openeducation_client::get_instance();
+            $client = client::get_instance();
             $badgesdata = $client->get_badges_earned_all($user);
             foreach ($badgesdata as $badgedata) {
                 $badge = self::get_instance_from_array($badgedata);
@@ -219,7 +215,7 @@ class openeducation_badge {
      * Creates a new instance of the class from an array.
      *
      * @param array $arr The badge data as an associative array
-     * @return openeducation_badge The badge.
+     * @return badge The badge.
      */
     public static function get_instance_from_array($arr) {
         $obj = new self();

@@ -24,11 +24,7 @@
 
 namespace local_openeducationbadges\task;
 
-use classes\openeducation_client;
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once(__DIR__ . '/../client.php');
+use local_openeducationbadges\client;
 
 /**
  * Cron task class for issuing badges in queue.
@@ -56,7 +52,7 @@ class issue_badges extends \core\task\scheduled_task {
 
         $issuerecords = $DB->get_records('local_oeb_badge_queue');
 
-        $client = openeducation_client::get_instance();
+        $client = client::get_instance();
 
         foreach ($issuerecords as $record) {
             $client->issue_badge($record->user_id, $record->badgeid);

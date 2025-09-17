@@ -27,10 +27,10 @@ defined('MOODLE_INTERNAL') || die();
 $observers = [
     [
         'eventname' => '\core\event\course_completed',
-        'callback' => 'local_openeducationbadges_observer::course_completed',
+        'callback' => '\local_openeducationbadges\observer::course_completed',
     ],
     [
         'eventname' => '\core\event\course_module_completion_updated',
-        'callback' => 'local_openeducationbadges_observer::course_module_completed',
+        'callback' => '\local_openeducationbadges\observer::course_module_completed',
     ],
 ];
