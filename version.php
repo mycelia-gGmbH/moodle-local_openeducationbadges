@@ -24,8 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2025091700;
+$plugin->version = 2025091800;
 $plugin->requires = 2022112800; // Moodle 4.1 version check.
 $plugin->component = 'local_openeducationbadges';
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.1.2';
+$plugin->release = '1.1.3';

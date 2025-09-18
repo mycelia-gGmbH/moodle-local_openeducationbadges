@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.3] - 2025-09-18
+
+## Fixed
+
+- no third party code and moodle built-in curl [#7](https://github.com/mycelia-gGmbH/moodle-local_openeducationbadges/issues/7)
+
 ## [1.1.2] - 2025-09-17
 
 ### Fixed

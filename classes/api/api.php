@@ -22,11 +22,16 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace Esirion\OpenEducationBadges;
+namespace local_openeducationbadges\api;
 
+use curl;
 use local_openeducationbadges\event\apirequest_called;
 use local_openeducationbadges\event\apirequest_answered;
 use local_openeducationbadges\event\apirequest_failed;
+
+defined('MOODLE_INTERNAL') || die();
+
+require_once($CFG->libdir . '/filelib.php');
 
 /**
  * Class for Open Education Badges API Interface.
@@ -35,7 +40,7 @@ use local_openeducationbadges\event\apirequest_failed;
  * @copyright  2024 Esirion AG
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class OpenEducationBadgesApi {
+class api {
     /** @var string Base URL of Open Educational Badges API */
     private $apibase = "https://api.openbadges.education/";
 
@@ -167,9 +172,11 @@ class OpenEducationBadgesApi {
      */
     public function api_request(string $method, string $endpoint, array $params) {
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $ch = new curl();
+
+        $options = [];
+        $options['CURLOPT_HEADER'] = false;
+        $options['CURLOPT_RETURNTRANSFER'] = true;
 
         $headerparams = [];
         $headerparams['Accept'] = 'application/json';
@@ -194,12 +201,7 @@ class OpenEducationBadgesApi {
 
         $payload = http_build_query($params, "", "&");
 
-        if ($method === 'get') {
-
-            $url .= '?'.$payload;
-
-        } else if ($method === 'post' || $method == 'put') {
-
+        if ($method === 'post' || $method == 'put') {
             if (!empty($params)) {
                 if ($isauth) {
                     $headerparams['Content-Type'] = 'application/x-www-form-urlencoded';
@@ -208,31 +210,26 @@ class OpenEducationBadgesApi {
                     $payload = json_encode($params);
                 }
             }
-            if ($method == 'post') {
-                curl_setopt($ch, CURLOPT_POST, true);
-            } else {
-                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-            }
-
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-
-        } else if ($method === 'delete') {
-
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
-
-        } else {
-            return false;
         }
-
-        // Set URL.
-        curl_setopt($ch, CURLOPT_URL, $url);
 
         // Set Headers.
         $headers = [];
         foreach ($headerparams as $key => $val) {
             $headers[] = "$key: $val";
         }
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $options['CURLOPT_HTTPHEADER'] = $headers;
+
+        if ($method === 'get') {
+            $response = $ch->get($url, $params, $options);
+        } else if ($method === 'post') {
+            $response = $ch->post($url, $payload, $options);
+        } else if ($method == 'put') {
+            $response = $ch->put($url, $payload, $options);
+        } else if ($method === 'delete') {
+            $response = $ch->delete($url, $payload, $options);
+        } else {
+            return false;
+        }
 
         self::log(
             json_encode([
@@ -243,11 +240,9 @@ class OpenEducationBadgesApi {
             'called'
         );
 
-        $response = curl_exec($ch);
-        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
         self::log($response, 'answered');
+
+        $httpcode = $ch->info['http_code'];
 
         // Decode response available.
         if (!empty($response)) {

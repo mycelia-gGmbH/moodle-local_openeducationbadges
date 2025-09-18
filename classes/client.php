@@ -24,15 +24,11 @@
 
 namespace local_openeducationbadges;
 
-use Esirion\OpenEducationBadges\OpenEducationBadgesApi;
+use local_openeducationbadges\api\api;
 
 use moodle_exception;
 use context_system;
 use core\message\message;
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once(__DIR__ . '/Esirion/OpenEducationBadges/OpenEducationBadgesApi.php');
 
 /**
  * Class for handling the communication to Open Education Badges API.
@@ -64,7 +60,7 @@ class client {
 
             $clientrecords = $DB->get_records('local_oeb_oauth2', ['status' => 1]);
             foreach ($clientrecords as $clientrecord) {
-                $api = new OpenEducationBadgesApi(
+                $api = new api(
                     clientid: $clientrecord->client_id,
                     clientsecret: $clientrecord->client_secret,
                     storetoken: [self::$client, 'store_token'],
@@ -349,7 +345,7 @@ class client {
     public function save_client($record, $update = false) {
         global $DB;
 
-        $api = new OpenEducationBadgesApi(
+        $api = new api(
             clientid: $record->client_id,
             clientsecret: $record->client_secret,
             storetoken: [$this, 'store_token'],
@@ -407,7 +403,7 @@ class client {
      * @return bool Returns false on failure and true on success.
      */
     public function test_connection($clientid, $clientsecret) {
-        $api = new OpenEducationBadgesApi(
+        $api = new api(
             clientid: $clientid,
             clientsecret: $clientsecret,
             storetoken: function () {

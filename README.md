@@ -27,3 +27,8 @@ To generate the required Credentials, log in to Open Educational Badges. When lo
 This supports multiple clients on one Moodle installation.
 
 On the Credentials page click on `Neue Credentials registrieren` for OAuth2 Client Credentials. Give a name for the credentials and copy the client id and secret values into OEB Moodle plugin settings, in `Site administration > Open Education Badges > Clients`.
+
+## Notice
+=================
+
+If you are self hosting the Open Educational Badges platform together with your Moodle application, then you probably have to remove the private network 192.168.0.0/16 from the cURL blocked hosts list in the Moodle HTTP security settings.
