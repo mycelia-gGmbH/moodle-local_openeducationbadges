@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.4] - 2025-09-19
+
+## Changed
+
+- Transition to Templates and Output API [#5](https://github.com/mycelia-gGmbH/moodle-local_openeducationbadges/issues/5)
+
 ## [1.1.3] - 2025-09-18
 
 ## Fixed

@@ -24,6 +24,7 @@
 
 use local_openeducationbadges\badge;
 use local_openeducationbadges\client;
+use local_openeducationbadges\output\badge_page;
 
 require(__DIR__ . '/../../config.php');
 
@@ -58,7 +59,12 @@ try {
 
 try {
     $badges = badge::get_badges();
-    $content .= $PAGE->get_renderer('local_openeducationbadges')->render_badgelist($badges, $context);
+    if (count($badges) === 0) {
+        $content .= $OUTPUT->notification(get_string('nobadges', 'local_openeducationbadges'), 'notifynotice');
+    }
+
+    $renderable = new badge_page(get_string('badgelisttitle', 'local_openeducationbadges'), $badges, $context);
+    $content .= $OUTPUT->render($renderable);
 } catch (Exception $e) {
     $content .= $OUTPUT->notification($e->getMessage(), 'notifyproblem');
 }

@@ -22,6 +22,9 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use local_openeducationbadges\badge;
+use local_openeducationbadges\output\badge_page;
+
 /**
  * Adds the Open Education Badges links to Moodle's settings navigation.
  *
@@ -115,7 +118,7 @@ function local_openeducationbadges_myprofile_navigation(\core_user\output\myprof
  * @param stdClass $user
  */
 function local_openeducationbadges_addbadges_profile($tree, $user): void {
-    global $PAGE, $DB;
+    global $PAGE, $DB, $OUTPUT;
 
     $category = new core_user\output\myprofile\category(
         'local_openeducationbadges/badgesplatform',
@@ -124,8 +127,14 @@ function local_openeducationbadges_addbadges_profile($tree, $user): void {
     );
     $tree->add_category($category);
 
-    $renderer = $PAGE->get_renderer('local_openeducationbadges');
-    $content = $renderer->render_user_assertions($user);
+    $badges = badge::get_earned_badges($user);
+    if (count($badges) === 0) {
+        $content = get_string('nobadgesearned', 'local_openeducationbadges');
+    } else {
+        $context = context_system::instance();
+        $renderable = new badge_page('', $badges, $context);
+        $content = $OUTPUT->render($renderable);
+    }
 
     $localnode = new core_user\output\myprofile\node(
         'local_openeducationbadges/badgesplatform',

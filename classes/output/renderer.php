@@ -15,17 +15,39 @@
 // along with Moodle. If not, see <https://www.gnu.org/licenses/>.
 
 /**
- * Version information. See https://docs.moodle.org/dev/version.php for more info.
+ * Renderer for Open Education Badges plugin
  *
  * @package    local_openeducationbadges
  * @copyright  2024 Esirion AG
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace local_openeducationbadges\output;
+
+use core\output\plugin_renderer_base;
+use local_openeducationbadges\badge;
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2025091900;
-$plugin->requires = 2022112800; // Moodle 4.1 version check.
-$plugin->component = 'local_openeducationbadges';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '1.1.4';
+require_once(__DIR__ . '/../../form/course_badge.php');
+
+/**
+ * HTML output renderer for Open Education Badges plugin
+ *
+ * @package    local_openeducationbadges
+ * @copyright  2024 Esirion AG
+ * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class renderer extends plugin_renderer_base {
+    /**
+     * Defer to template.
+     *
+     * @param badge_page $page
+     *
+     * @return string html for the page
+     */
+    public function render_badge_page($page): string {
+        $data = $page->export_for_template($this);
+        return parent::render_from_template('local_openeducationbadges/badge_page', $data);
+    }
+}

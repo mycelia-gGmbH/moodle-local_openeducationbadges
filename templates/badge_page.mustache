@@ -1,0 +1,82 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_openeducationbadges/badge_page
+
+    Template for badge list page.
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * heading
+    * badges
+
+    Example context (json):
+    {
+        "heading": "All badges",
+        "badges": [
+            {
+                "badgeimage": "https://www.badge1.com/image.png";
+                "badgelink": "https://www.badge1.com";
+                "badgename": "Name 1",
+                "badgeissuer": "Issuer 1",
+                "badgedesc": "Description 1",
+                "badgefooter": {
+                    "heading": "Select awarding method:",
+                    "form": formHTML
+                }
+            },
+            {
+                "badgeimage": "https://www.badge2.com/image.png";
+                "badgelink": "https://www.badge2.com";
+                "badgename": "Name 2",
+                "badgeissuer": "Issuer 2",
+                "badgedesc": "Description 2"
+            }
+        ]
+    }
+}}
+
+{{#heading}}
+    <h2>{{heading}}</h2>
+{{/heading}}
+
+<ul class="badgelist">
+    {{#badges}}
+        <li class="openeducation-badge-card">
+            <div class="openeducation-badge-card-body">
+                <img class="badgeimage" src="{{badgeimage}}" alt="{{badgename}}" />
+                <div class="badgeinfo">
+                    <a class="badgename" target="_blank" href="{{badgelink}}">{{badgename}}</a>
+                    <p class="badgeissuer">{{badgeissuer}}</p>
+                    <p class="badgedesc">{{badgedesc}}</p>
+                </div>
+            </div>
+
+            {{#badgefooter}}
+                <div class="openeducation-badge-card-footer">
+                    <p class="badgeawarding">{{badgefooter.heading}}</p>
+                    {{{badgefooter.form}}}
+                </div>
+            {{/badgefooter}}
+        </li>
+    {{/badges}}
+</ul>
