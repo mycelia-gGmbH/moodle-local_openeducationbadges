@@ -575,4 +575,28 @@ class client {
             throw new moodle_exception(get_string('noiframeurl', 'local_openeducationbadges'));
         }
     }
+
+    /**
+     * Get the iframe url for user backpack
+     *
+     * @param string $email
+     * @param string $lang
+     * @return string
+     * @throws moodle_exception
+     */
+    public function get_user_backpack_iframe_url($email, $lang) {
+        $json = false;
+        foreach ($this->apis as $api) {
+            $json = $api->get_learnes_backpack_embed($email, $lang);
+            if ($json) {
+                break;
+            }
+        }
+
+        if ($json) {
+            return $json['url'];
+        } else {
+            throw new moodle_exception(get_string('noiframeurl', 'local_openeducationbadges'));
+        }
+    }
 }

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.6] - 2025-12-16
+
+### Changed
+
+- On the profile page insert third party iframe (OEB) of the users backpack.
+
 ## [1.1.5] - 2025-12-04
 
 ### Added

@@ -118,8 +118,24 @@ along with Moodle. If not, see <https://www.gnu.org/licenses/gpl-3.0>.
 }
 
 /* Profile */
-.userprofile .profile_tree .path-local-openeducationbadges ul.badgelist {
-    gap: 8px;
+.userprofile .profile_tree .path-local-openeducationbadges {
+    column-span: all;
+    display: block !important;
+}
+.userprofile .profile_tree .path-local-openeducationbadges .card-body {
+    padding: 0;
+}
+.userprofile .profile_tree .path-local-openeducationbadges h3 {
+    display: none;
+}
+.userprofile .profile_tree .path-local-openeducationbadges .contentnode {
+    margin-top: 0 !important;
+}
+.userprofile .profile_tree .path-local-openeducationbadges .contentnode > span {
+    display: block;
+}
+.userprofile .profile_tree .path-local-openeducationbadges .oeb-iframe-embed {
+    min-height: 782px;
 }
 
 /* Iframe embed */
@@ -127,4 +143,5 @@ along with Moodle. If not, see <https://www.gnu.org/licenses/gpl-3.0>.
     width: 100%;
     min-height: 912px;
     border: none;
+    display: block;
 }

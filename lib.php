@@ -24,7 +24,7 @@
 
 use local_openeducationbadges\badge;
 use local_openeducationbadges\client;
-use local_openeducationbadges\output\badge_page;
+use local_openeducationbadges\output\profile_page;
 
 /**
  * Adds the Open Education Badges links to Moodle's settings navigation.
@@ -100,12 +100,11 @@ function local_openeducationbadges_add_course_admin_link(&$branch) {
  * @param \moodle_course $course
  */
 function local_openeducationbadges_myprofile_navigation(\core_user\output\myprofile\tree $tree, $user, $iscurrentuser, $course) {
-    global $PAGE, $DB, $CFG;
-
     $category = new core_user\output\myprofile\category(
-        'local_openeducationbadges/badges',
-        get_string('profilebadgelist', 'local_openeducationbadges'),
-        null
+        'local_openeducationbadges/badgesplatform',
+        get_string('badgesplatform', 'local_openeducationbadges'),
+        null,
+        ' path-local-openeducationbadges'
     );
     $tree->add_category($category);
 
@@ -119,22 +118,15 @@ function local_openeducationbadges_myprofile_navigation(\core_user\output\myprof
  * @param stdClass $user
  */
 function local_openeducationbadges_addbadges_profile($tree, $user): void {
-    global $PAGE, $DB, $OUTPUT;
+    global $OUTPUT;
 
-    $category = new core_user\output\myprofile\category(
-        'local_openeducationbadges/badgesplatform',
-        get_string('badgesplatform', 'local_openeducationbadges'),
-        null
-    );
-    $tree->add_category($category);
-
-    $badges = badge::get_earned_badges($user);
-    if (count($badges) === 0) {
-        $content = get_string('nobadgesearned', 'local_openeducationbadges');
-    } else {
-        $context = context_user::instance($user->id);
-        $renderable = new badge_page('', $badges, $context);
+    $context = context_user::instance($user->id);
+    try {
+        $client = client::get_instance();
+        $renderable = new profile_page($user->email, $client, $context);
         $content = $OUTPUT->render($renderable);
+    } catch (Exception $e) {
+        $content = $OUTPUT->notification($e->getMessage(), 'notifyproblem');
     }
 
     $localnode = new core_user\output\myprofile\node(
@@ -143,9 +135,7 @@ function local_openeducationbadges_addbadges_profile($tree, $user): void {
         '',
         null,
         null,
-        $content,
-        null,
-        'path-local-openeducationbadges'
+        $content
     );
     $tree->add_node($localnode);
 }

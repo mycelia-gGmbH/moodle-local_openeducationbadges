@@ -461,4 +461,20 @@ class api {
 
         return $response;
     }
+
+    /**
+     * Get the iframe url for user backpack
+     *
+     * @param string $email
+     * @param string $lang
+     * @return mixed request response
+     */
+    public function get_learnes_backpack_embed($email, $lang) {
+        $response = $this->post("v3/issuer/learners-backpack", [
+            "email" => $email,
+            "lang" => $lang,
+        ]);
+
+        return $response;
+    }
 }
