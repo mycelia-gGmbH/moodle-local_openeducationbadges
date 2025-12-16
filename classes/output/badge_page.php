@@ -28,6 +28,7 @@ use core\output\renderable;
 use core\output\renderer_base;
 use core\output\templatable;
 use local_openeducationbadges\badge;
+use local_openeducationbadges\client;
 use oeb_course_badge_form;
 
 defined('MOODLE_INTERNAL') || die();
@@ -48,6 +49,9 @@ class badge_page implements renderable, templatable {
     /** @var badge[] $badges Array of badges to render. */
     private $badges = [];
 
+    /** @var client $client Client object. */
+    private $client = null;
+
     /** @var \context $context Context of rendering. */
     private $context = null;
 
@@ -62,10 +66,13 @@ class badge_page implements renderable, templatable {
         $this->heading = $heading;
         $this->badges = $badges;
         $this->context = $context;
+        $this->client = client::get_instance();
     }
 
     #[\Override]
     public function export_for_template(renderer_base $output): \stdClass {
+        global $CFG;
+
         $data = new \stdClass();
         $data->heading = $this->heading;
         $data->badges = [];
@@ -84,10 +91,33 @@ class badge_page implements renderable, templatable {
                     "heading" => s(get_string('selectaward', 'local_openeducationbadges')),
                     "form" => $mform->render(),
                 ];
+            } else if ($this->context instanceof \context_system) {
+                $editlink = $CFG->wwwroot . '/local/openeducationbadges/badge.php?action=edit&badge=' . $badge->get_slug();
+                $badgedata["badgefooter"] = [
+                    "actions" => true,
+                    "editlink" => $editlink,
+                ];
             }
 
             $data->badges[] = $badgedata;
         }
+
+        if ($this->context instanceof \context_system) {
+            $createlink = $CFG->wwwroot . '/local/openeducationbadges/badge.php?action=create&issuer=';
+
+            $data->issuers = [];
+            foreach ($this->client->get_client_ids() as $clientid) {
+                $issuers = $this->client->get_issuers($clientid);
+                foreach ($issuers as $issuer) {
+                    $data->issuers[] = [
+                        "name" => $issuer['name'],
+                        "slug" => $issuer['slug'],
+                        "createlink" => $createlink . $issuer['slug'] . '&clientid=' . $clientid,
+                    ];
+                }
+            }
+        }
+
         return $data;
     }
 

@@ -531,4 +531,48 @@ class client {
             }
         }
     }
+
+    /**
+     * Get the iframe url for badge creation
+     *
+     * @param int $clientid
+     * @param string $issuer
+     * @param string $lang
+     * @return string
+     * @throws moodle_exception
+     */
+    public function get_badge_creation_iframe_url($clientid, $issuer, $lang) {
+        $api = $this->apis[$clientid];
+        $json = $api->get_badge_create_embed($issuer, $lang);
+
+        if ($json) {
+            return $json['url'];
+        } else {
+            throw new moodle_exception(get_string('noiframeurl', 'local_openeducationbadges'));
+        }
+    }
+
+    /**
+     * Get the iframe url for badge edit
+     *
+     * @param string $badge
+     * @param string $lang
+     * @return string
+     * @throws moodle_exception
+     */
+    public function get_badge_edit_iframe_url($badge, $lang) {
+        $json = false;
+        foreach ($this->apis as $api) {
+            $json = $api->get_badge_edit_embed($badge, $lang);
+            if ($json) {
+                break;
+            }
+        }
+
+        if ($json) {
+            return $json['url'];
+        } else {
+            throw new moodle_exception(get_string('noiframeurl', 'local_openeducationbadges'));
+        }
+    }
 }

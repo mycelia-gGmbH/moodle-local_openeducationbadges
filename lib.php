@@ -23,6 +23,7 @@
  */
 
 use local_openeducationbadges\badge;
+use local_openeducationbadges\client;
 use local_openeducationbadges\output\badge_page;
 
 /**
@@ -131,7 +132,7 @@ function local_openeducationbadges_addbadges_profile($tree, $user): void {
     if (count($badges) === 0) {
         $content = get_string('nobadgesearned', 'local_openeducationbadges');
     } else {
-        $context = context_system::instance();
+        $context = context_user::instance($user->id);
         $renderable = new badge_page('', $badges, $context);
         $content = $OUTPUT->render($renderable);
     }

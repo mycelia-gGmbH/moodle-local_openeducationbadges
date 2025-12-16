@@ -429,4 +429,36 @@ class api {
     public function set_error_return($errorreturn) {
         $this->errorreturn = $errorreturn;
     }
+
+    /**
+     * Get the iframe url for badge creation
+     *
+     * @param string $issuer
+     * @param string $lang
+     * @return mixed request response
+     */
+    public function get_badge_create_embed($issuer, $lang) {
+        $response = $this->post("v3/issuer/badge-create-embed", [
+            "issuer" => $issuer,
+            "lang" => $lang,
+        ]);
+
+        return $response;
+    }
+
+    /**
+     * Get the iframe url for badge edit
+     *
+     * @param string $badge
+     * @param string $lang
+     * @return mixed request response
+     */
+    public function get_badge_edit_embed($badge, $lang) {
+        $response = $this->post("v3/issuer/badge-edit-embed", [
+            "badge" => $badge,
+            "lang" => $lang,
+        ]);
+
+        return $response;
+    }
 }

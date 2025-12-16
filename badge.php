@@ -25,11 +25,18 @@
 use local_openeducationbadges\badge;
 use local_openeducationbadges\client;
 use local_openeducationbadges\output\badge_page;
+use local_openeducationbadges\output\badge_edit_page;
+use local_openeducationbadges\output\badge_create_page;
 
 require(__DIR__ . '/../../config.php');
 
 $courseid = optional_param('courseid', null, PARAM_INT);
 $context = empty($courseid) ? context_system::instance() : context_course::instance($courseid);
+
+$action = optional_param('action', 'list', PARAM_TEXT);
+$badgeslug = optional_param('badge', null, PARAM_TEXT);
+$issuerslug = optional_param('issuer', null, PARAM_TEXT);
+$clientid = optional_param('clientid', null, PARAM_INT);
 
 $url = new moodle_url('/local/openeducationbadges/badge.php');
 
@@ -57,16 +64,45 @@ try {
     $content .= $OUTPUT->notification($e->getMessage(), 'notifyproblem');
 }
 
-try {
-    $badges = badge::get_badges();
-    if (count($badges) === 0) {
-        $content .= $OUTPUT->notification(get_string('nobadges', 'local_openeducationbadges'), 'notifynotice');
-    }
+switch ($action) {
+    case 'edit':
+        if ($badgeslug) {
+            try {
+                $renderable = new badge_edit_page($badgeslug, $client, $context);
+                $content .= $OUTPUT->render($renderable);
+            } catch (Exception $e) {
+                $content .= $OUTPUT->notification($e->getMessage(), 'notifyproblem');
+            }
+        } else {
+            $content .= $OUTPUT->notification(get_string('nobadgegiven', 'local_openeducationbadges'), 'notifyproblem');
+        }
 
-    $renderable = new badge_page(get_string('badgelisttitle', 'local_openeducationbadges'), $badges, $context);
-    $content .= $OUTPUT->render($renderable);
-} catch (Exception $e) {
-    $content .= $OUTPUT->notification($e->getMessage(), 'notifyproblem');
+        break;
+    case 'create':
+        if ($issuerslug) {
+            try {
+                $renderable = new badge_create_page($issuerslug, $clientid, $client, $context);
+                $content .= $OUTPUT->render($renderable);
+            } catch (Exception $e) {
+                $content .= $OUTPUT->notification($e->getMessage(), 'notifyproblem');
+            }
+        } else {
+            $content .= $OUTPUT->notification(get_string('noissuergiven', 'local_openeducationbadges'), 'notifyproblem');
+        }
+
+        break;
+    default:
+        try {
+            $badges = badge::get_badges();
+            if (count($badges) === 0) {
+                $content .= $OUTPUT->notification(get_string('nobadges', 'local_openeducationbadges'), 'notifynotice');
+            }
+
+            $renderable = new badge_page(get_string('badgelisttitle', 'local_openeducationbadges'), $badges, $context);
+            $content .= $OUTPUT->render($renderable);
+        } catch (Exception $e) {
+            $content .= $OUTPUT->notification($e->getMessage(), 'notifyproblem');
+        }
 }
 
 echo $OUTPUT->header();

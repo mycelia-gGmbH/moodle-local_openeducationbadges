@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.5] - 2025-12-04
+
+### Added
+
+- In the admin area on the badge list page new buttons to create/edit badges in third party iframe (OEB).
+
 ## [1.1.4] - 2025-09-19
 
 ## Changed
