@@ -74,14 +74,14 @@ class api {
      * @param bool $errorreturn
      */
     public function __construct(
-            string $clientid = "",
-            string $clientsecret = "",
-            string $username = "",
-            string $password = "",
-            callable|null $storetoken = null,
-            callable|null $retrievetoken = null,
-            bool $errorreturn = false
-        ) {
+        string $clientid = "",
+        string $clientsecret = "",
+        string $username = "",
+        string $password = "",
+        callable|null $storetoken = null,
+        callable|null $retrievetoken = null,
+        bool $errorreturn = false
+    ) {
 
         $this->clientid = $clientid;
         $this->clientsecret = $clientsecret;
@@ -250,9 +250,7 @@ class api {
         }
 
         if ($httpcode >= 200 && $httpcode <= 300) {
-
             return $response;
-
         } else {
             self::log(
                 json_encode([

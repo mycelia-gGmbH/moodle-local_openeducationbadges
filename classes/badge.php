@@ -25,7 +25,6 @@
 namespace local_openeducationbadges;
 
 use local_openeducationbadges\client;
-
 use moodle_exception;
 
 /**
@@ -36,7 +35,6 @@ use moodle_exception;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class badge {
-
     /**
      * Completion type associated to courses
      */

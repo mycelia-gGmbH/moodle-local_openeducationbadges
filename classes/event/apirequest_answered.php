@@ -32,7 +32,6 @@ namespace local_openeducationbadges\event;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class apirequest_answered extends \core\event\base {
-
     /**
      * Init method.
      *

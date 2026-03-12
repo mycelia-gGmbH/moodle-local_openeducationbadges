@@ -34,7 +34,6 @@ use local_openeducationbadges\client;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class issue_badges extends \core\task\scheduled_task {
-
     /**
      * Return the task's name as shown in admin screens.
      *

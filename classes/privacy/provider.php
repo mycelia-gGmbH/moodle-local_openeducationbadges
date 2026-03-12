@@ -41,9 +41,8 @@ use core_privacy\local\request\writer;
 class provider implements
     // This plugin does store personal user data.
     \core_privacy\local\metadata\provider,
-    \core_privacy\local\request\plugin\provider,
-    \core_privacy\local\request\core_userlist_provider {
-
+    \core_privacy\local\request\core_userlist_provider,
+    \core_privacy\local\request\plugin\provider {
     /**
      * Returns mata data for given user id.
      *

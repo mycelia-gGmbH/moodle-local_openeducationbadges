@@ -24,6 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+// Check if has capability local/openeducationbadges:configure.
 if (has_capability('local/openeducationbadges:configure', context_system::instance())) {
 
     // Site admin category.

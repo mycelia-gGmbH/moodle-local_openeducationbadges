@@ -63,7 +63,7 @@ class oeb_course_badge_form extends moodleform {
 
         $mform->addElement(
             'advcheckbox',
-            'coursecompletion_'.strval($this->badgeid),
+            'coursecompletion_' . strval($this->badgeid),
             get_string('coursecompletion', 'local_openeducationbadges')
         );
 
@@ -80,14 +80,14 @@ class oeb_course_badge_form extends moodleform {
             foreach ($actvityoptions as $activityid => $activityname) {
                 $mform->addElement(
                     'advcheckbox',
-                    'activitycompletion_'.strval($this->badgeid).'_'.strval($activityid),
+                    'activitycompletion_' . strval($this->badgeid) . '_' . strval($activityid),
                     $activityname
                 );
             }
             $mform->addElement('html', '</div>');
         }
 
-        $mform->addElement('submit', 'submit_'.strval($this->badgeid), get_string('saveawarding', 'local_openeducationbadges'));
+        $mform->addElement('submit', 'submit_' . strval($this->badgeid), get_string('saveawarding', 'local_openeducationbadges'));
     }
 
     /**

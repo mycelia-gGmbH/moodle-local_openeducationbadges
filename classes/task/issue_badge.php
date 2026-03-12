@@ -34,7 +34,6 @@ use local_openeducationbadges\client;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class issue_badge extends \core\task\adhoc_task {
-
     /**
      * Factory method for issue_badge task.
      *

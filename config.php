@@ -50,7 +50,7 @@ switch ($action) {
     case 'edit':
         echo $OUTPUT->heading(get_string('clientadd', 'local_openeducationbadges'), 2);
 
-        $clientrecord = new stdClass;
+        $clientrecord = new stdClass();
         $isnewrecord = true;
 
         if ($clientid) {
@@ -73,7 +73,6 @@ switch ($action) {
         if ($mform->is_cancelled()) {
             redirect($clientsurl);
         } else if ($data = $mform->get_data()) {
-
             try {
                 $client = client::get_instance();
 
@@ -132,7 +131,7 @@ switch ($action) {
 
             try {
                 $client = client::get_instance();
-                $client->save_issuers( $clientid, $dataarr);
+                $client->save_issuers($clientid, $dataarr);
             } catch (Exception $e) {
                 echo $OUTPUT->notification(get_string('connectionproblemgeneral', 'local_openeducationbadges'), 'notifyproblem');
             }
@@ -195,7 +194,7 @@ switch ($action) {
             $editissuersurl = new moodle_url('/local/openeducationbadges/config.php?action=issuers&id=' . $recordid);
             $editissuersaction = $OUTPUT->action_icon($editissuersurl, $editissuersicon);
 
-            $deleteurl = new moodle_url('/local/openeducationbadges/config.php?action=delete&id='.$recordid.'&sesskey='.sesskey());
+            $deleteurl = new moodle_url('/local/openeducationbadges/config.php?action=delete&id=' . $recordid . '&sesskey=' . sesskey());
             $deleteaction = $OUTPUT->action_icon(
                 $deleteurl,
                 $deleteicon,

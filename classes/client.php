@@ -25,7 +25,6 @@
 namespace local_openeducationbadges;
 
 use local_openeducationbadges\api\api;
-
 use moodle_exception;
 use context_system;
 use core\message\message;
@@ -53,7 +52,6 @@ class client {
         global $DB;
 
         if (is_null(self::$client)) {
-
             self::$client = new self();
 
             $apis = [];
@@ -72,8 +70,10 @@ class client {
                 $api->set_error_return(false);
 
                 if (!empty($res)) {
-                    if (!empty($res['error']) && ($res['error'] == 'invalid client_id'
-                            || $res['error'] == 'invalid client_secret')) {
+                    if (
+                        !empty($res['error']) &&
+                        ($res['error'] == 'invalid client_id' || $res['error'] == 'invalid client_secret')
+                    ) {
                         $clientrecord->status = 0;
                         $DB->update_record('local_oeb_oauth2', $clientrecord);
 
@@ -357,7 +357,6 @@ class client {
             $DB->update_record('local_oeb_oauth2', $record);
             $apis[$record->id] = $api;
         } else {
-
             $exists = $DB->record_exists(
                 'local_oeb_oauth2',
                 [
