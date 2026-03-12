@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.7] - 2026-03-12
+
+### Fixed
+
+- Badge edit uses correct api connection
+
 ## [1.1.6] - 2025-12-16
 
 ### Changed
@@ -16,13 +22,13 @@ All notable changes to this project will be documented in this file.
 
 ## [1.1.4] - 2025-09-19
 
-## Changed
+### Changed
 
 - Transition to Templates and Output API [#5](https://github.com/mycelia-gGmbH/moodle-local_openeducationbadges/issues/5)
 
 ## [1.1.3] - 2025-09-18
 
-## Fixed
+### Fixed
 
 - no third party code and moodle built-in curl [#7](https://github.com/mycelia-gGmbH/moodle-local_openeducationbadges/issues/7)
 

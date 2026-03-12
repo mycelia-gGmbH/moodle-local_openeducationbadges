@@ -553,6 +553,28 @@ class client {
     }
 
     /**
+     * Get api from badge
+     *
+     * @param string $badge
+     * @return api
+     */
+    public function get_api_from_badge($badge) {
+        foreach ($this->apis as $api) {
+            $badges = $api->get_all_badges();
+
+            if ($badges) {
+                foreach ($badges as $b) {
+                    if ($b['slug'] === $badge) {
+                        return $api;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Get the iframe url for badge edit
      *
      * @param string $badge
@@ -561,13 +583,8 @@ class client {
      * @throws moodle_exception
      */
     public function get_badge_edit_iframe_url($badge, $lang) {
-        $json = false;
-        foreach ($this->apis as $api) {
-            $json = $api->get_badge_edit_embed($badge, $lang);
-            if ($json) {
-                break;
-            }
-        }
+        $api = $this->get_api_from_badge($badge);
+        $json = $api->get_badge_edit_embed($badge, $lang);
 
         if ($json) {
             return $json['url'];
