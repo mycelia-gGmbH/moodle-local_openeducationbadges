@@ -194,7 +194,9 @@ switch ($action) {
             $editissuersurl = new moodle_url('/local/openeducationbadges/config.php?action=issuers&id=' . $recordid);
             $editissuersaction = $OUTPUT->action_icon($editissuersurl, $editissuersicon);
 
-            $deleteurl = new moodle_url('/local/openeducationbadges/config.php?action=delete&id=' . $recordid . '&sesskey=' . sesskey());
+            $deleteurl = new moodle_url(
+                '/local/openeducationbadges/config.php?action=delete&id=' . $recordid . '&sesskey=' . sesskey()
+            );
             $deleteaction = $OUTPUT->action_icon(
                 $deleteurl,
                 $deleteicon,
