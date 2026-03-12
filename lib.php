@@ -104,7 +104,7 @@ function local_openeducationbadges_myprofile_navigation(\core_user\output\myprof
         'local_openeducationbadges/badgesplatform',
         get_string('badgesplatform', 'local_openeducationbadges'),
         null,
-        ' path-local-openeducationbadges'
+        ' d-block path-local-openeducationbadges'
     );
     $tree->add_category($category);
 
