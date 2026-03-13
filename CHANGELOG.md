@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.8] - 2026-03-13
+
+### Fixed
+
+- output compatible with moodle versions smaller 4.4
+
 ## [1.1.7] - 2026-03-12
 
 ### Fixed

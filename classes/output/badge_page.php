@@ -24,9 +24,9 @@
 
 namespace local_openeducationbadges\output;
 
-use core\output\renderable;
-use core\output\renderer_base;
-use core\output\templatable;
+use renderable;
+use renderer_base;
+use templatable;
 use local_openeducationbadges\badge;
 use local_openeducationbadges\client;
 use oeb_course_badge_form;
