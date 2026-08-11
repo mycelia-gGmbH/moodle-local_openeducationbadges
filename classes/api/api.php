@@ -62,6 +62,9 @@ class api {
     /** @var bool Flag to determine if an error should be returned */
     private $errorreturn = false;
 
+    /** @var int HTTP status code of the last failed request, 0 if none */
+    protected $lasterrorcode = 0;
+
     /**
      * Constructor.
      *
@@ -252,6 +255,7 @@ class api {
         if ($httpcode >= 200 && $httpcode <= 300) {
             return $response;
         } else {
+            $this->lasterrorcode = $httpcode;
             self::log(
                 json_encode([
                     'response' => $response,
@@ -411,6 +415,27 @@ class api {
     }
 
     /**
+     * API request to get a single issuer by slug.
+     *
+     * @param string $slug Issuer slug
+     * @return mixed request response
+     */
+    public function get_issuer(string $slug) {
+        $response = $this->get("v1/issuer/issuers/$slug", []);
+        return $response;
+    }
+
+    /**
+     * API request to get all available quota tiers.
+     *
+     * @return mixed request response
+     */
+    public function get_quota_tiers() {
+        $response = $this->get("v3/issuer/quotas", []);
+        return $response;
+    }
+
+    /**
      * Get client id
      *
      * @return string client id
@@ -426,6 +451,15 @@ class api {
      */
     public function set_error_return($errorreturn) {
         $this->errorreturn = $errorreturn;
+    }
+
+    /**
+     * Get the HTTP status code of the last failed request.
+     *
+     * @return int HTTP status code, or 0 if no error has occurred yet
+     */
+    public function get_last_error_code(): int {
+        return $this->lasterrorcode;
     }
 
     /**
