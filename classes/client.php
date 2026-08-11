@@ -186,6 +186,40 @@ class client {
     }
 
     /**
+     * Attempt to resolve the display name of the next upgrade package for an issuer.
+     *
+     * Makes two API calls: one to fetch the issuer's current quota tier (which contains
+     * the next tier's key), and one to fetch all quota tier definitions to get the name.
+     * Returns null if the issuer is on the highest tier, or if any lookup fails.
+     *
+     * @param api $api Authenticated API instance
+     * @param string $issuerslug Slug of the issuer that hit the quota limit
+     * @return string|null Display name of the next package, or null
+     */
+    private function get_next_quota_package_name(api $api, string $issuerslug): ?string {
+        try {
+            $issuerresponse = $api->get_issuer($issuerslug);
+            if (empty($issuerresponse['quotas']['nextLevel'])) {
+                return null;
+            }
+            $nextlevelkey = $issuerresponse['quotas']['nextLevel'];
+
+            $tiersresponse = $api->get_quota_tiers();
+            if (empty($tiersresponse['quotas']) || !is_array($tiersresponse['quotas'])) {
+                return null;
+            }
+            foreach ($tiersresponse['quotas'] as $tier) {
+                if (isset($tier['key']) && $tier['key'] === $nextlevelkey) {
+                    return $tier['name'] ?? null;
+                }
+            }
+            return null;
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
+    /**
      * Issue badge to user
      *
      * @param int $userid The id of the recipient of the badge.
@@ -225,6 +259,15 @@ class client {
                     $res = $api->issue_badge($issuer, $badge['slug'], $user->email);
 
                     if (empty($res) || !empty($res['error'])) {
+                        if ($api->get_last_error_code() === 402) {
+                            $packagename = $this->get_next_quota_package_name($api, $issuer);
+                            if ($packagename) {
+                                throw new moodle_exception(
+                                    get_string('quotaexceeded_badgeaward_withpackage', 'local_openeducationbadges', $packagename)
+                                );
+                            }
+                            throw new moodle_exception(get_string('quotaexceeded_badgeaward', 'local_openeducationbadges'));
+                        }
                         throw new moodle_exception(get_string('issuebadgefailed', 'local_openeducationbadges'));
                     }
                 }
