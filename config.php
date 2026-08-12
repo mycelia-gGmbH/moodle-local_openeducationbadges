@@ -144,7 +144,7 @@ switch ($action) {
         break;
     case 'delete':
         if (confirm_sesskey()) {
-            $DB->delete_records('local_oeb_oauth2', ['id' => $clientid]);
+            $DB->delete_records('local_openeducationbadges_oauth2', ['id' => $clientid]);
         }
 
         redirect($clientsurl, get_string('clientdeleted', 'local_openeducationbadges'));
@@ -166,7 +166,7 @@ switch ($action) {
 
         try {
             $client = client::get_instance();
-            $clientrecords = $DB->get_records('local_oeb_oauth2');
+            $clientrecords = $DB->get_records('local_openeducationbadges_oauth2');
         } catch (Exception $e) {
             echo $OUTPUT->notification(get_string('connectionproblemgeneral', 'local_openeducationbadges'), 'notifyproblem');
         }

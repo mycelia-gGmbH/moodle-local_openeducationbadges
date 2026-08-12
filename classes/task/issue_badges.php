@@ -49,14 +49,14 @@ class issue_badges extends \core\task\scheduled_task {
     public function execute() {
         global $DB;
 
-        $issuerecords = $DB->get_records('local_oeb_badge_queue');
+        $issuerecords = $DB->get_records('local_openeducationbadges_badge_queue');
 
         $client = client::get_instance();
 
         foreach ($issuerecords as $record) {
             $client->issue_badge($record->user_id, $record->badgeid);
 
-            $DB->delete_records('local_oeb_badge_queue', ['id' => $record->id]);
+            $DB->delete_records('local_openeducationbadges_badge_queue', ['id' => $record->id]);
         }
     }
 }

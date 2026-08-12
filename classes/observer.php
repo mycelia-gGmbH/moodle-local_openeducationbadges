@@ -57,7 +57,7 @@ class observer {
         global $DB;
 
         $records = $DB->get_records(
-            'local_oeb_course_badge',
+            'local_openeducationbadges_course_badge',
             [
                 'courseid' => $eventdata->course,
                 'completion_method' => badge::COMPLETION_TYPE_COURSE,
@@ -99,7 +99,7 @@ class observer {
         global $DB;
 
         $records = $DB->get_records(
-            'local_oeb_course_badge',
+            'local_openeducationbadges_course_badge',
             [
                 'courseid' => $eventdata->course,
                 'activityid' => $eventdata->coursemoduleid,

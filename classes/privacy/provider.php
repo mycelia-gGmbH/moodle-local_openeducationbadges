@@ -52,7 +52,7 @@ class provider implements
     public static function get_metadata(collection $collection): collection {
 
         $collection->add_database_table(
-            'local_oeb_badge_queue',
+            'local_openeducationbadges_badge_queue',
             [
                 'id' => 'privacy:metadata:badge_queue:id',
                 'badgeid' => 'privacy:metadata:badge_queue:badgeid',
@@ -101,9 +101,9 @@ class provider implements
         $context = \context_system::instance();
         $user = $contextlist->get_user();
 
-        $data = $DB->get_records('local_oeb_badge_queue', ['user_id' => $user->id]);
+        $data = $DB->get_records('local_openeducationbadges_badge_queue', ['user_id' => $user->id]);
         if (!empty($data)) {
-            writer::with_context($context)->export_data(['local_oeb_badge_queue'], (object) $data);
+            writer::with_context($context)->export_data(['local_openeducationbadges_badge_queue'], (object) $data);
         }
 
         $data = new \stdClass();
@@ -125,7 +125,7 @@ class provider implements
             return;
         }
 
-        $DB->delete_records('local_oeb_badge_queue');
+        $DB->delete_records('local_openeducationbadges_badge_queue');
     }
 
     /**
@@ -137,7 +137,7 @@ class provider implements
         global $DB;
 
         $userid = $contextlist->get_user()->id;
-        $DB->delete_records('local_oeb_badge_queue', ['user_id' => $userid]);
+        $DB->delete_records('local_openeducationbadges_badge_queue', ['user_id' => $userid]);
     }
 
     /**
@@ -151,7 +151,7 @@ class provider implements
         $context = $userlist->get_context();
         if ($context->contextlevel == CONTEXT_SYSTEM) {
             $records = $DB->get_records(
-                'local_oeb_badge_queue',
+                'local_openeducationbadges_badge_queue',
                 null,
                 '',
                 'user_id'
@@ -180,7 +180,7 @@ class provider implements
 
         if ($context->contextlevel == CONTEXT_SYSTEM) {
             foreach ($userids as $userid) {
-                $DB->delete_records('local_oeb_badge_queue', ['user_id' => strval($userid)]);
+                $DB->delete_records('local_openeducationbadges_badge_queue', ['user_id' => strval($userid)]);
             }
         }
     }

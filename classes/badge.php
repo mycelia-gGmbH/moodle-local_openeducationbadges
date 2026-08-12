@@ -123,7 +123,7 @@ class badge {
         global $DB;
 
         $record = $DB->get_record(
-            'local_oeb_course_badge',
+            'local_openeducationbadges_course_badge',
             [
                 'courseid' => $courseid,
                 'badgeid' => $this->get_id(),
@@ -149,7 +149,7 @@ class badge {
         global $DB;
 
         return $DB->insert_record(
-            'local_oeb_course_badge',
+            'local_openeducationbadges_course_badge',
             [
                 'courseid' => $courseid,
                 'badgeid' => $this->get_id(),
