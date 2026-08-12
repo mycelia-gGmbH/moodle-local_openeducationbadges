@@ -73,7 +73,7 @@ class issue_badge extends \core\task\adhoc_task {
             $client->issue_badge($data->userid, $data->badgeid);
         } catch (\Exception $e) {
             $DB->insert_record(
-                'local_oeb_badge_queue',
+                'local_openeducationbadges_badge_queue',
                 [
                     'user_id' => $data->userid,
                     'badgeid' => $data->badgeid,

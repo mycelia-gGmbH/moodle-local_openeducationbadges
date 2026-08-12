@@ -56,7 +56,7 @@ class client {
 
             $apis = [];
 
-            $clientrecords = $DB->get_records('local_oeb_oauth2', ['status' => 1]);
+            $clientrecords = $DB->get_records('local_openeducationbadges_oauth2', ['status' => 1]);
             foreach ($clientrecords as $clientrecord) {
                 $api = new api(
                     clientid: $clientrecord->client_id,
@@ -75,7 +75,7 @@ class client {
                         ($res['error'] == 'invalid client_id' || $res['error'] == 'invalid client_secret')
                     ) {
                         $clientrecord->status = 0;
-                        $DB->update_record('local_oeb_oauth2', $clientrecord);
+                        $DB->update_record('local_openeducationbadges_oauth2', $clientrecord);
 
                         self::$client->notify_connection_problem($clientrecord->client_name);
                     } else {
@@ -102,7 +102,7 @@ class client {
 
         foreach ($this->apis as $clientid => $api) {
             $issuerrecords = $DB->get_records(
-                'local_oeb_config_issuers',
+                'local_openeducationbadges_config_issuers',
                 [
                     'client_id' => $clientid,
                 ],
@@ -141,7 +141,7 @@ class client {
 
         foreach ($this->apis as $clientid => $api) {
             $issuerrecords = $DB->get_records(
-                'local_oeb_config_issuers',
+                'local_openeducationbadges_config_issuers',
                 [
                     'client_id' => $clientid,
                 ],
@@ -233,7 +233,7 @@ class client {
 
         foreach ($this->apis as $clientid => $api) {
             $issuerrecords = $DB->get_records(
-                'local_oeb_config_issuers',
+                'local_openeducationbadges_config_issuers',
                 [
                     'client_id' => $clientid,
                 ],
@@ -313,7 +313,7 @@ class client {
         $issuersall = $api->get_issuers();
 
         $issuerrecords = $DB->get_records(
-            'local_oeb_config_issuers',
+            'local_openeducationbadges_config_issuers',
             [
                 'client_id' => $clientid,
             ],
@@ -351,7 +351,7 @@ class client {
         foreach ($issuers as $key => $value) {
             if ($value) {
                 $exists = $DB->record_exists(
-                    'local_oeb_config_issuers',
+                    'local_openeducationbadges_config_issuers',
                     [
                         'client_id' => $clientid,
                         'issuer_id' => $key,
@@ -359,7 +359,7 @@ class client {
                 );
                 if (!$exists) {
                     $DB->insert_record(
-                        'local_oeb_config_issuers',
+                        'local_openeducationbadges_config_issuers',
                         [
                             'client_id' => $clientid,
                             'issuer_id' => $key,
@@ -368,7 +368,7 @@ class client {
                 }
             } else {
                 $DB->delete_records(
-                    'local_oeb_config_issuers',
+                    'local_openeducationbadges_config_issuers',
                     [
                         'client_id' => $clientid,
                         'issuer_id' => $key,
@@ -397,11 +397,11 @@ class client {
 
         if ($update) {
             $record->status = 1;
-            $DB->update_record('local_oeb_oauth2', $record);
+            $DB->update_record('local_openeducationbadges_oauth2', $record);
             $apis[$record->id] = $api;
         } else {
             $exists = $DB->record_exists(
-                'local_oeb_oauth2',
+                'local_openeducationbadges_oauth2',
                 [
                     'client_id' => $record->client_id,
                 ]
@@ -410,7 +410,7 @@ class client {
             if ($exists) {
                 throw new moodle_exception(get_string('clientidexists', 'local_openeducationbadges'));
             } else {
-                $id = $DB->insert_record('local_oeb_oauth2', $record);
+                $id = $DB->insert_record('local_openeducationbadges_oauth2', $record);
                 $apis[$id] = $api;
             }
         }
@@ -426,7 +426,7 @@ class client {
         global $DB;
 
         $clientdata = $DB->get_record(
-            'local_oeb_oauth2',
+            'local_openeducationbadges_oauth2',
             [
                 'id' => $clientid,
             ],
@@ -486,7 +486,7 @@ class client {
         $clientid = $obj->get_client_id();
 
         $res = $DB->get_record(
-            'local_oeb_oauth2',
+            'local_openeducationbadges_oauth2',
             [
                 'client_id' => $clientid,
             ],
@@ -509,7 +509,7 @@ class client {
         $clientid = $obj->get_client_id();
 
         $record = $DB->get_record(
-            'local_oeb_oauth2',
+            'local_openeducationbadges_oauth2',
             [
                 'client_id' => $clientid,
             ],
@@ -519,7 +519,7 @@ class client {
 
         $record->access_token = json_encode($token);
 
-        $DB->update_record('local_oeb_oauth2', $record);
+        $DB->update_record('local_openeducationbadges_oauth2', $record);
     }
 
     /**
@@ -530,7 +530,7 @@ class client {
     public function exist_severed_connections() {
         global $DB;
 
-        return $DB->record_exists('local_oeb_oauth2', ['status' => 0]);
+        return $DB->record_exists('local_openeducationbadges_oauth2', ['status' => 0]);
     }
 
     /**

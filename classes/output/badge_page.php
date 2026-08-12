@@ -148,7 +148,7 @@ class badge_page implements renderable, templatable {
         $PAGE->set_url($PAGE->url, $urlparams);
 
         $coursecompletionrecord = $DB->get_record(
-            'local_oeb_course_badge',
+            'local_openeducationbadges_course_badge',
             [
                 'courseid' => $courseid,
                 'badgeid' => $badgeid,
@@ -158,7 +158,7 @@ class badge_page implements renderable, templatable {
         );
 
         $activitycompletionrecords = $DB->get_records(
-            'local_oeb_course_badge',
+            'local_openeducationbadges_course_badge',
             [
                 'courseid' => $courseid,
                 'badgeid' => $badgeid,
@@ -184,28 +184,28 @@ class badge_page implements renderable, templatable {
             if (array_key_exists('submit_' . strval($badgeid), $dataarr)) {
                 $coursecompletion = intval($dataarr['coursecompletion_' . strval($badgeid)]);
                 if ($coursecompletionrecord && !$coursecompletion) {
-                    $DB->delete_records('local_oeb_course_badge', ['id' => $coursecompletionrecord->id]);
+                    $DB->delete_records('local_openeducationbadges_course_badge', ['id' => $coursecompletionrecord->id]);
                 } else if (!$coursecompletionrecord && $coursecompletion) {
                     $coursecompletionrecord = new \stdClass();
                     $coursecompletionrecord->courseid = $courseid;
                     $coursecompletionrecord->badgeid = $badgeid;
                     $coursecompletionrecord->completion_method = badge::COMPLETION_TYPE_COURSE;
                     $coursecompletionrecord->activityid = 0;
-                    $DB->insert_record('local_oeb_course_badge', $coursecompletionrecord);
+                    $DB->insert_record('local_openeducationbadges_course_badge', $coursecompletionrecord);
                 }
 
                 $activites = array_keys($mform->get_activity_options());
                 foreach ($activites as $activityid) {
                     $activitycompletion = intval($dataarr['activitycompletion_' . strval($badgeid) . '_' . strval($activityid)]);
                     if (!$activitycompletion && array_key_exists($activityid, $activitycompletionrecords)) {
-                        $DB->delete_records('local_oeb_course_badge', ['id' => $activitycompletionrecords[$activityid]->id]);
+                        $DB->delete_records('local_openeducationbadges_course_badge', ['id' => $activitycompletionrecords[$activityid]->id]);
                     } else if ($activitycompletion && !array_key_exists($activityid, $activitycompletionrecords)) {
                         $activitycompletionrecord = new \stdClass();
                         $activitycompletionrecord->courseid = $courseid;
                         $activitycompletionrecord->badgeid = $badgeid;
                         $activitycompletionrecord->completion_method = badge::COMPLETION_TYPE_ACTIVITY;
                         $activitycompletionrecord->activityid = $activityid;
-                        $DB->insert_record('local_oeb_course_badge', $activitycompletionrecord);
+                        $DB->insert_record('local_openeducationbadges_course_badge', $activitycompletionrecord);
                     };
                 };
             }
